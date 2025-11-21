@@ -1,6 +1,6 @@
 # Tumba Tennis & Padel
 
-Modern, snabb och redaktörsvänlig webbplats för Tumba TK – byggd från grunden med senaste tekniken 2025.
+Modern, snabb och redaktörsvänlig webbplats för Tumba TK
 
 ![Tumba TK](client/src/assets/tumbatk.png){width=180}
 
