@@ -1,0 +1,12 @@
+﻿# Node
+node_modules/
+dist/
+.env.local
+
+# .NET
+bin/
+obj/
+*.csproj.user
+
+# Vite
+.vite/
