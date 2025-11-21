@@ -2,7 +2,7 @@
 
 Modern, snabb och redaktörsvänlig webbplats för Tumba TK
 
-![Tumba TK](client/src/assets/tumbatk.png){width=50}{height=20}
+<img width="180" height="180" alt="tumbatk" src="https://github.com/user-attachments/assets/6d96abb4-da7a-4cb4-8827-6a54a849fc75" />
 
 ### Live demo
 Frontend → https://tumba-tennis-padel.vercel.app *(deployas snart)*  
