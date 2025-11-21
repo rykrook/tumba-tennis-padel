@@ -2,7 +2,7 @@
 
 Modern, snabb och redaktörsvänlig webbplats för Tumba TK – byggd från grunden med senaste tekniken 2025.
 
-![Tumba TK](https://i.imgur.com/8jK5pLm.png width=180 height=180)
+![Tumba TK](client/src/assets/tumbatk.png){width=180}
 
 ### Live demo
 Frontend → https://tumba-tennis-padel.vercel.app *(deployas snart)*  
