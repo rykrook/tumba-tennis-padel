@@ -1,9 +1,9 @@
 // client/src/components/Navbar.tsx
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { 
-  Users, Trophy, Calendar, Phone, MapPin, 
-  Menu, X, ChevronDown, UserCog 
+import {
+  Users, Trophy, Calendar, Phone, MapPin,
+  Menu, X, ChevronDown, UserCog
 } from 'lucide-react'
 import logo from '../assets/tumbatk.png'
 
@@ -28,7 +28,7 @@ export default function Navbar() {
 
             {/* KLUBBEN – hover med osynlig ramp så den inte försvinner */}
             <div className="relative">
-              <div 
+              <div
                 className="hover:bg-secondary px-4 py-2 rounded flex items-center gap-2 transition cursor-pointer-events"
                 onMouseEnter={(e) => e.currentTarget.parentElement?.querySelector('.dropdown')?.classList.remove('hidden')}
               >
@@ -38,7 +38,7 @@ export default function Navbar() {
               </div>
 
               {/* Dropdown med osynlig ramp (detta är tricket) */}
-              <div 
+              <div
                 className="dropdown hidden absolute top-full left-1/2 -translate-x-1/2 pt-5 w-80"
                 onMouseLeave={(e) => e.currentTarget.classList.add('hidden')}
               >
@@ -76,14 +76,14 @@ export default function Navbar() {
         {/* Mobilmeny */}
         {mobileOpen && (
           <div className="md:hidden pb-6">
-            <Link to="/" className="block py-3 px-4 hover:bg-secondary rounded">Hem</Link>
-            <Link to="/tennis" className="block py-3 px-4 hover:bg-secondary rounded">Tennis</Link>
-            <Link to="/padel" className="block py-3 px-4 hover:bg-secondary rounded">Padel</Link>
-            <Link to="/kontakt" className="block py-3 px-4 hover:bg-secondary rounded">Kontakt</Link>
-            <Link to="/hitta-hit" className="block py-3 px-4 hover:bg-secondary rounded">Hitta hit</Link>
-            <Link to="/hall-of-fame" className="block py-3 px-4 hover:bg-secondary rounded">Hall of Fame</Link>
-            <Link to="/tranare-styrelsen" className="block py-3 px-4 hover:bg-secondary rounded">Tränare & Styrelse</Link>
-            <Link to="/träningsdagar" className="block py-3 px-4 hover:bg-secondary rounded">Träningsdagar</Link>
+            <Link to="/" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Hem</Link>
+            <Link to="/tennis" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Tennis</Link>
+            <Link to="/padel" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Padel</Link>
+            <Link to="/kontakt" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Kontakt</Link>
+            <Link to="/hitta-hit" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Hitta hit</Link>
+            <Link to="/hall-of-fame" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Hall of Fame</Link>
+            <Link to="/tranare-styrelsen" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Tränare & Styrelse</Link>
+            <Link to="/träningsdagar" onClick={() => setMobileOpen(false)} className="block py-3 px-4 hover:bg-secondary rounded">Träningsdagar</Link>
           </div>
         )}
       </div>
