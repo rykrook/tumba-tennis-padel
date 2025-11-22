@@ -8,15 +8,29 @@ export default {
       name: 'showKommunBanner',
       title: 'Visa Botkyrka-banner?',
       type: 'boolean',
-      description: 'Avmarkera för att dölja bannern helt (t.ex. efter 2025)',
       initialValue: true,
     },
+    {
+      name: 'instagram',
+      title: 'Instagram-länk',
+      type: 'url',
+    },
+    {
+      name: 'facebook',
+      title: 'Facebook-länk',
+      type: 'url',
+    },
+    {
+      name: 'currentTermin',
+      title: 'Aktuell termin',
+      type: 'string',
+      description: 'T.ex. "Vårterminen 2025"',
+    },
+    {
+      name: 'holidayNote',
+      title: 'Lovnotering',
+      type: 'string',
+      description: 'T.ex. "Sportlov vecka 9 · Påsklov vecka 16"',
+    },
   ],
-  preview: {
-    prepare() {
-      return {
-        title: 'Webbplatsinställningar',
-      }
-    }
-  }
 }

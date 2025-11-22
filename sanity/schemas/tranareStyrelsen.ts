@@ -1,4 +1,5 @@
-﻿export default {
+﻿
+export default {
   name: 'tranareStyrelsen',
   title: 'Tränare & Styrelsen',
   type: 'document',
@@ -15,6 +16,11 @@
             { name: 'role', title: 'Roll', type: 'string' },
             { name: 'bio', title: 'Bio', type: 'text' },
             { name: 'image', title: 'Bild', type: 'image' },
+            { 
+              name: 'email', 
+              title: 'E-post', 
+              type: 'string',
+            },
           ],
         },
       ],

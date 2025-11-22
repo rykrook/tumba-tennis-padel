@@ -3,11 +3,20 @@
 @tailwind utilities;
 
 @layer components {
-  .bg-primary { background-color: #0070ba; }
-  .bg-secondary { background-color: #183c86; }
+  .bg-primary { background-color: #183c86; }
+  .bg-secondary { background-color:  #0070ba; }
   .bg-accent { background-color: #ebb869; }
-  .text-primary { color: #0070ba; }
+  .text-primary { color: #183c86; }
   .text-accent { color: #ebb869; }
-  .hover\:bg-secondary:hover { background-color: #183c86; }
+  .hover\:bg-secondary:hover { background-color: #0070ba; }
   .border-accent { border-color: #ebb869; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1.2s ease-out forwards;
 }

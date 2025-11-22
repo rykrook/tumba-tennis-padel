@@ -9,23 +9,29 @@ import HittaHit from './pages/HittaHit'
 import HallOfFame from './pages/HallOfFame'
 import TranareStyrelsen from './pages/TranareStyrelsen'
 import Traningsdagar from './pages/Traningsdagar'
+import Footer from './components/Footer'
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="flex flex-col min-h-screen">
         <Navbar />
         <KommunBanner />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tennis" element={<Tennis />} />
-          <Route path="/padel" element={<Padel />} />
-          <Route path="/kontakt" element={<Kontakt />} />
-          <Route path="/hitta-hit" element={<HittaHit />} />
-          <Route path="/hall-of-fame" element={<HallOfFame />} />
-          <Route path="/tranare-styrelsen" element={<TranareStyrelsen />} />
-          <Route path="/träningsdagar" element={<Traningsdagar />} />
-        </Routes>
+        
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/tennis" element={<Tennis />} />
+            <Route path="/padel" element={<Padel />} />
+            <Route path="/kontakt" element={<Kontakt />} />
+            <Route path="/hitta-hit" element={<HittaHit />} />
+            <Route path="/hall-of-fame" element={<HallOfFame />} />
+            <Route path="/tranare-styrelsen" element={<TranareStyrelsen />} />
+            <Route path="/träningsdagar" element={<Traningsdagar />} />
+          </Routes>
+        </main>
+
+        <Footer />
       </div>
     </Router>
   )

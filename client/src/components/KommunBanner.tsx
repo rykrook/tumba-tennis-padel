@@ -22,8 +22,8 @@ export default function KommunBanner() {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3 flex-wrap text-center">
         <img src={botvid} alt="Botkyrka kommun" className="h-9 md:h-10" />
         <p className="text-xs md:text-sm font-bold text-primary leading-tight">
-          Från 1 september 2025 driver <span className="text-accent">Botkyrka kommun</span> anläggningen →{' '}
-          <a href="https://www.botkyrka.se" target="_blank" rel="noopener noreferrer" className="underline hover:text-secondary font-bold">
+          Från 1 september 2025 driver <span className="text-red-700">Botkyrka kommun</span> anläggningen →{' '}
+          <a href="https://www.botkyrka.se/uppleva-och-gora/idrott-och-motion/har-kan-du-trana/idrottsanlaggningar/tumba/tumba-tennis-och-padelhall" target="_blank" rel="noopener noreferrer" className="underline hover:text-secondary font-bold">
             botkyrka.se
           </a>
         </p>
