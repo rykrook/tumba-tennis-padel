@@ -16,7 +16,7 @@ export default function Tennis() {
     })
   }, [])
 
- if (!pageData) {
+  if (!pageData) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-32 text-center">
         <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-3xl mx-auto">
@@ -25,7 +25,7 @@ export default function Tennis() {
           </h2>
           <p className="text-xl text-gray-600 mb-12">
             Håll utkik – nya aktiviteter läggs upp löpande!
-          <hr className="my-24 border-t-4 border-primary/20 rounded-full max-w-md mx-auto" />
+            <hr className="my-24 border-t-4 border-primary/20 rounded-full max-w-md mx-auto" />
           </p>
           <div className="mt-12">
             <h3 className="text-2xl font-bold text-primary mb-6">
@@ -55,8 +55,10 @@ export default function Tennis() {
         <img src={urlFor(pageData.image).width(1400).url()} alt="Tennisskola" className="w-full rounded-3xl shadow-2xl mb-16" />
       )}
 
-      <div className="prose prose-xl max-w-none text-center mb-20">
-        <PortableText value={pageData.content} />
+      <div className="bg-primary/10 rounded-2xl p-8 my-16 text-center border-4 border-primary/20">
+        <p className="text-xl md:text-2xl font-bold text-primary italic">
+          <PortableText value={pageData.content} />
+        </p>
       </div>
 
       {/* ANMÄLNINGAR – bara Tennisaktiviteter */}
