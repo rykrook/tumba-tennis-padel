@@ -16,16 +16,34 @@ export default function Tennis() {
     })
   }, [])
 
-  if (!pageData) return <div className="max-w-5xl mx-auto px-4 py-32 text-center">
-      <div className="bg-white rounded-3xl shadow-2xl p-16">
-        <h2 className="text-4xl font-bold text-primary mb-6">
-          Inga aktiviteter just nu
-        </h2>
-        <p className="text-xl text-gray-600">
-          Håll utkik – nya aktiviteter läggs upp löpande!
-        </p>
+ if (!pageData) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-32 text-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-3xl mx-auto">
+          <h2 className="text-4xl font-bold text-primary mb-6">
+            Inga aktiviteter just nu
+          </h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Håll utkik – nya aktiviteter läggs upp löpande!
+          <hr className="my-24 border-t-4 border-primary/20 rounded-full max-w-md mx-auto" />
+          </p>
+          <div className="mt-12">
+            <h3 className="text-2xl font-bold text-primary mb-6">
+              Boka bana
+            </h3>
+            <a
+              href="https://www.matchi.se/facilities/tumbatk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-primary hover:bg-secondary text-white font-bold text-xl px-16 py-8 rounded-2xl shadow-2xl transition transform hover:scale-105"
+            >
+              BOKA TENNISBANA PÅ MATCHI.SE
+            </a>
+          </div>
+        </div>
       </div>
-      </div>
+    )
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">

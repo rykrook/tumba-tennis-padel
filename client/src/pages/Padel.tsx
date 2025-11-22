@@ -23,7 +23,36 @@ export default function Padel() {
     setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 5000)
   }
 
-  if (!pageData) return <div className="p-8 text-center text-xl text-gray-600">Laddar...</div>
+ if (!pageData) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-32 text-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-3xl mx-auto">
+          <h2 className="text-4xl font-bold text-primary mb-6">
+            Inga aktiviteter just nu
+          </h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Håll utkik – nya aktiviteter läggs upp löpande!
+          <hr className="my-24 border-t-4 border-primary/20 rounded-full max-w-md mx-auto" />
+          </p>
+          <div className="mt-12">
+            <h3 className="text-2xl font-bold text-primary mb-6">
+              Boka bana
+            </h3>
+            <a
+              href="https://www.matchi.se/facilities/tumbatk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-primary hover:bg-secondary text-white font-bold text-xl px-16 py-8 rounded-2xl shadow-2xl transition transform hover:scale-105"
+            >
+              BOKA PADELBANA PÅ MATCHI.SE
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const hasAktiviteter = aktiviteter.some(akt => akt.showForm)
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -39,8 +68,9 @@ export default function Padel() {
         <PortableText value={pageData.content || []} />
       </div>
 
-      {aktiviteter.length > 0 && (
-        <div className="space-y-16">
+      {/* FORMULÄR – bara om det finns */}
+      {hasAktiviteter && (
+        <div className="space-y-16 mb-24">
           {aktiviteter.map((akt, i) => (
             akt.showForm && (
               <div key={i} className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 max-w-3xl mx-auto">
@@ -73,8 +103,8 @@ export default function Padel() {
             )
           ))}
         </div>
-
       )}
+
       <hr className="my-24 border-t-4 border-primary/20 rounded-full max-w-md mx-auto" />
 
       <div className="text-center">
