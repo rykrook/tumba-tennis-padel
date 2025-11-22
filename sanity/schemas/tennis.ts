@@ -1,6 +1,6 @@
 ﻿export default {
-  name: 'tennisskola',
-  title: 'Tennisskola',
+  name: 'tennis',
+  title: 'TennisSidan',
   type: 'document',
   fields: [
     { name: 'content', title: 'Innehåll', type: 'array', of: [{ type: 'block' }] },

@@ -1,7 +1,7 @@
 ﻿
 import homepage from './homepage'
 import siteSettings from './siteSettings'
-import tennisskola from './tennisskola'
+import tennis from './tennis'
 import padelaktivitet from './padelaktivitet'
 import kontakt from './kontakt'
 import hittaHit from './hittaHit'
@@ -13,7 +13,7 @@ import anmalan from './anmalan'
 
 export const schemaTypes = [
   homepage,
-  tennisskola,
+  tennis,
   padelaktivitet,
   kontakt,
   hittaHit,
