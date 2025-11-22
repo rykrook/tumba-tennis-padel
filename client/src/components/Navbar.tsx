@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { 
-  Home, Users, Trophy, Calendar, Phone, MapPin, 
+  Users, Trophy, Calendar, Phone, MapPin, 
   Menu, X, ChevronDown, UserCog 
 } from 'lucide-react'
 import logo from '../assets/tumbatk.png'

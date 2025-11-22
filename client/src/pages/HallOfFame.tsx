@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { client } from '../lib/sanity'
 
 export default function HallOfFame() {
