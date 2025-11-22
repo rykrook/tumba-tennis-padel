@@ -11,8 +11,10 @@ export default function Kontakt() {
   if (!data) return <div className="p-8 text-center text-xl">Laddar...</div>
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-5xl font-bold text-primary mb-10">Kontakt</h1>
+    <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+      <h1 className="text-5xl md:text-6xl font-black text-primary mb-12">
+        Kontakt
+      </h1>
       <div className="bg-white rounded-xl shadow-2xl p-8 grid md:grid-cols-2 gap-8">
         <div>
           <h2 className="text-2xl font-bold mb-4">Kontaktuppgifter</h2>
