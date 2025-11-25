@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import KommunBanner from './components/KommunBanner'
 import Home from './pages/Home'
@@ -10,14 +10,23 @@ import HallOfFame from './pages/HallOfFame'
 import TranareStyrelsen from './pages/TranareStyrelsen'
 import Traningsdagar from './pages/Traningsdagar'
 import Footer from './components/Footer'
+import { useEffect } from 'react'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <KommunBanner />
-        
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
