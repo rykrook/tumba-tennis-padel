@@ -33,7 +33,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-8 text-sm opacity-75">
-          © {new Date().getFullYear()} Tumba Tennis & Padel
+          © {new Date().getFullYear()} Tumba Tennisklubb
         </p>
       </div>
     </footer>

@@ -17,7 +17,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-4">
             <img src={logo} alt="Tumba TK" className="h-14 w-14" />
-            <span className="text-2xl font-bold hidden lg:block">Tumba Tennis & Padel</span>
+            <span className="text-2xl font-bold hidden lg:block">Tumba Tennisklubb</span>
           </Link>
 
           {/* Desktop meny */}

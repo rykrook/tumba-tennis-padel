@@ -69,7 +69,7 @@ export default function Tennis() {
           </h2>
 
           <div className="bg-gray-50 rounded-3xl p-10 md:p-16 shadow-xl border-4 border-primary/20">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
               {aktiviteter.map((akt: any, i: number) => (
                 akt.url && (
                   <div key={i} className="text-center">
