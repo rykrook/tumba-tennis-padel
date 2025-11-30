@@ -20,8 +20,7 @@ export default function Navbar() {
 
   // KLASS-DEFINITIONER
   const defaultBgClass = "bg-primary text-white shadow-xl";
-  const mobileLinkClass = "py-4 text-3xl font-extrabold text-white hover:text-secondary transition-colors duration-200 flex items-center justify-center gap-4 border-b border-white/10";
-
+  
   // Bestäm navbarens bakgrund och textfärg
   let navBackgroundClass;
   let iconColorClass;
