@@ -21,11 +21,12 @@
   animation: fadeIn 1.2s ease-out forwards;
 }
 
-footer {
-  background-color: #183c86;
+body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-article footer {
-  background-color: transparent !important;
-  border-top: 1px solid #e5e7eb !important;
+#__next {
+  min-height: 100vh;
+  background-color: #183c86;
 }
