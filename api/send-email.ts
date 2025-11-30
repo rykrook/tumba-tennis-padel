@@ -14,34 +14,31 @@ export default async function handler(req: any, res: any) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': 'https://tumba-tennis-padel.vercel.app',
       },
       body: JSON.stringify({
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
         template_params: {
-          from_name: name,
-          from_email: email,
+          from_name: name || 'Okänt namn',
+          from_email: email || 'ingen@email.se',
           phone: phone || 'Inget telefonnummer',
-          message,
-          aktivitet: aktivitet || 'Allmänt meddelande',
+          message: message || 'Inget meddelande',
+          aktivitet: aktivitet || 'Kontakt',
         },
       }),
     })
 
-    if (response.ok) {
-      res.status(200).json({ success: true })
-    } else {
-      res.status(500).json({ error: 'EmailJS svarade inte OK' })
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('EmailJS error:', response.status, errorText)
+      return res.status(500).json({ error: 'EmailJS svarade inte OK' })
     }
-  } catch (error) {
-    console.error('Email error:', error)
-    res.status(500).json({ error: 'Misslyckades att skicka mail' })
-  }
-}
 
-export const config = {
-  api: {
-    bodyParser: true,
-  },
+    res.status(200).json({ success: true })
+  } catch (error: any) {
+    console.error('Server error:', error)
+    res.status(500).json({ error: error.message || 'Misslyckades' })
+  }
 }
