@@ -5,11 +5,26 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end()
   }
 
-  if (req.method !== 'POST') return res.status(405).end()
+  if (req.method !== 'POST') {
+    return res.status(405).end()
+  }
 
   const { name, email, phone, message, aktivitet, honeypot } = req.body
 
-  if (honeypot) return res.status(400).json({ error: 'Bot' })
+  if (honeypot) {
+    return res.status(400).json({ error: 'Bot detected' })
+  }
+
+
+  const templateParams = {
+    from_name: (name || '').trim() || 'Okänt namn',
+    from_email: (email || '').trim() || 'no-reply@tumbatk.se',
+    phone: (phone || '').trim() || 'Inget telefonnummer',
+    message: (message || '').trim() || '(Inget meddelande)',
+    aktivitet: (aktivitet || '').trim() || 'Allmänt',
+  }
+
+  console.log('Sending to EmailJS with params:', templateParams)
 
   try {
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -19,27 +34,20 @@ export default async function handler(req: any, res: any) {
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
-        private_key: process.env.EMAILJS_PRIVATE_KEY,
-        template_params: {
-          from_name: name || 'Okänt namn',
-          from_email: email || 'no-reply@example.com',
-          phone: phone || 'Inget telefonnummer',
-          message: message || '(tomt meddelande)',
-          aktivitet: aktivitet || 'Allmänt',
-        },
+        template_params: templateParams,
       }),
     })
 
+    const responseText = await response.text()
+    console.log('EmailJS response:', response.status, responseText)
+
     if (response.ok) {
-      console.log('EmailJS: Mail skickat!')
-      return res.status(200).json({ success: true })
+      res.status(200).json({ success: true })
     } else {
-      const errorText = await response.text()
-      console.error('EmailJS error:', response.status, errorText)
-      return res.status(500).json({ error: 'EmailJS svarade inte OK' })
+      res.status(400).json({ error: `EmailJS fel: ${response.status} - ${responseText}` })
     }
   } catch (error: any) {
-    console.error('Fetch error:', error.message)
-    return res.status(500).json({ error: 'Serverfel' })
+    console.error('Full error:', error)
+    res.status(500).json({ error: error.message })
   }
 }
