@@ -5,26 +5,11 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end()
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).end()
-  }
+  if (req.method !== 'POST') return res.status(405).end()
 
   const { name, email, phone, message, aktivitet, honeypot } = req.body
 
-  if (honeypot) {
-    return res.status(400).json({ error: 'Bot detected' })
-  }
-
-
-  const templateParams = {
-    from_name: (name || '').trim() || 'Okänt namn',
-    from_email: (email || '').trim() || 'no-reply@tumbatk.se',
-    phone: (phone || '').trim() || 'Inget telefonnummer',
-    message: (message || '').trim() || '(Inget meddelande)',
-    aktivitet: (aktivitet || '').trim() || 'Allmänt',
-  }
-
-  console.log('Sending to EmailJS with params:', templateParams)
+  if (honeypot) return res.status(400).json({ error: 'Bot' })
 
   try {
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -35,20 +20,26 @@ export default async function handler(req: any, res: any) {
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
         private_key: process.env.EMAILJS_PRIVATE_KEY,
-        template_params: templateParams,
+        template_params: {
+          from_name: name?.trim() || 'Okänt namn',
+          from_email: email?.trim() || 'no-reply@tumbatk.se',
+          phone: phone?.trim() || 'Inget telefonnummer',
+          message: message?.trim() || '(Inget meddelande)',
+          aktivitet: aktivitet?.trim() || 'Allmänt',
+        },
       }),
     })
 
-    const responseText = await response.text()
-    console.log('EmailJS response:', response.status, responseText)
+    const text = await response.text()
+    console.log('EmailJS response:', response.status, text)
 
     if (response.ok) {
-      res.status(200).json({ success: true })
+      return res.status(200).json({ success: true })
     } else {
-      res.status(400).json({ error: `EmailJS fel: ${response.status} - ${responseText}` })
+      return res.status(400).json({ error: 'EmailJS 400', details: text })
     }
   } catch (error: any) {
-    console.error('Full error:', error)
-    res.status(500).json({ error: error.message })
+    console.error('Email error:', error)
+    return res.status(500).json({ error: error.message })
   }
 }
