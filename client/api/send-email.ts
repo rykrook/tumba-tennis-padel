@@ -15,8 +15,8 @@ export default async function handler(req: any, res: any) {
 
   try {
     await emailjs.send(
-      process.env.VITE_EMAILJS_SERVICE_ID as string,
-      process.env.VITE_EMAILJS_TEMPLATE_ID as string,
+      process.env.EMAILJS_SERVICE_ID as string,
+      process.env.EMAILJS_TEMPLATE_ID as string,
       {
         from_name: name,
         from_email: email,
@@ -25,8 +25,8 @@ export default async function handler(req: any, res: any) {
         aktivitet: aktivitet || 'Allmänt meddelande',
       },
       {
-        publicKey: process.env.VITE_EMAILJS_PUBLIC_KEY as string,
-        privateKey: process.env.VITE_EMAILJS_PRIVATE_KEY as string,
+        publicKey: process.env.EMAILJS_PUBLIC_KEY as string,
+        privateKey: process.env.EMAILJS_PRIVATE_KEY as string,
       }
     )
 
