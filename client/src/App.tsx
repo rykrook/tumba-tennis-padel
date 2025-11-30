@@ -45,8 +45,8 @@ function App() {
             <Route path="/nyheter/:slug" element={<NewsItem />} />
           </Routes>
         </main>
-        <Footer />
       </div>
+      <Footer />
     </Router>
   )
 }
