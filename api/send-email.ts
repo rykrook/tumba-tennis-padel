@@ -1,4 +1,11 @@
 export default async function handler(req: any, res: any) {
+
+  //cors
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
@@ -12,10 +19,7 @@ export default async function handler(req: any, res: any) {
   try {
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Origin': 'https://tumba-tennis-padel.vercel.app',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
@@ -30,15 +34,13 @@ export default async function handler(req: any, res: any) {
       }),
     })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('EmailJS error:', response.status, errorText)
-      return res.status(500).json({ error: 'EmailJS svarade inte OK' })
+    if (response.ok) {
+      res.status(200).json({ success: true })
+    } else {
+      res.status(500).json({ error: 'EmailJS svarade inte OK' })
     }
-
-    res.status(200).json({ success: true })
-  } catch (error: any) {
-    console.error('Server error:', error)
-    res.status(500).json({ error: error.message || 'Misslyckades' })
+  } catch (error) {
+    console.error('Email error:', error)
+    res.status(500).json({ error: 'Misslyckades skicka mail' })
   }
 }
