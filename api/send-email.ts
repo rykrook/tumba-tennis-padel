@@ -1,6 +1,3 @@
-
-import emailjs from '@emailjs/nodejs'
-
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -8,36 +5,41 @@ export default async function handler(req: any, res: any) {
 
   const { name, email, phone, message, aktivitet, honeypot } = req.body
 
-  // Honeypot – blockerar bots
   if (honeypot) {
     return res.status(400).json({ error: 'Bot detected' })
   }
 
   try {
-    await emailjs.send(
-      process.env.EMAILJS_SERVICE_ID as string,
-      process.env.EMAILJS_TEMPLATE_ID as string,
-      {
-        from_name: name,
-        from_email: email,
-        phone: phone || 'Inget telefonnummer',
-        message,
-        aktivitet: aktivitet || 'Allmänt meddelande',
+    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        publicKey: process.env.EMAILJS_PUBLIC_KEY as string,
-        privateKey: process.env.EMAILJS_PRIVATE_KEY as string,
-      }
-    )
+      body: JSON.stringify({
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: process.env.EMAILJS_TEMPLATE_ID,
+        user_id: process.env.EMAILJS_PUBLIC_KEY,
+        template_params: {
+          from_name: name,
+          from_email: email,
+          phone: phone || 'Inget telefonnummer',
+          message,
+          aktivitet: aktivitet || 'Allmänt meddelande',
+        },
+      }),
+    })
 
-    res.status(200).json({ success: true })
+    if (response.ok) {
+      res.status(200).json({ success: true })
+    } else {
+      res.status(500).json({ error: 'EmailJS svarade inte OK' })
+    }
   } catch (error) {
-    console.error('EmailJS error:', error)
-    res.status(500).json({ error: 'Failed to send email' })
+    console.error('Email error:', error)
+    res.status(500).json({ error: 'Misslyckades att skicka mail' })
   }
 }
 
-// Vercel behöver detta för att veta att det är en serverless function
 export const config = {
   api: {
     bodyParser: true,
