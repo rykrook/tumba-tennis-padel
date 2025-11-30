@@ -1,5 +1,4 @@
-﻿
-import homepage from './homepage'
+﻿import homepage from './homepage'
 import siteSettings from './siteSettings'
 import tennis from './tennis'
 import padelaktivitet from './padelaktivitet'
@@ -9,7 +8,7 @@ import hallOfFame from './hallOfFame'
 import tranareStyrelsen from './tranareStyrelsen'
 import traningsdagar from './traningsdagar'
 import news from './news'
-import anmalan from './anmalan'
+
 
 export const schemaTypes = [
   homepage,
@@ -22,5 +21,4 @@ export const schemaTypes = [
   traningsdagar,
   siteSettings,
   news,
-  anmalan,
 ]

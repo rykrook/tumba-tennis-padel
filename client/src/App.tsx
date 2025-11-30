@@ -11,6 +11,8 @@ import TranareStyrelsen from './pages/TranareStyrelsen'
 import Traningsdagar from './pages/Traningsdagar'
 import Footer from './components/Footer'
 import { useEffect } from 'react'
+import NewsItem from './pages/NewsItem'
+import NewsArchive from './pages/NewsArchive'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -25,8 +27,10 @@ function App() {
     <Router>
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
-        <Navbar />
         <KommunBanner />
+        <div className="relative z-40">
+          <Navbar />
+        </div>
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -37,9 +41,10 @@ function App() {
             <Route path="/hall-of-fame" element={<HallOfFame />} />
             <Route path="/tranare-styrelsen" element={<TranareStyrelsen />} />
             <Route path="/träningsdagar" element={<Traningsdagar />} />
+            <Route path="/nyheter" element={<NewsArchive />} />
+            <Route path="/nyheter/:slug" element={<NewsItem />} />
           </Routes>
         </main>
-
         <Footer />
       </div>
     </Router>

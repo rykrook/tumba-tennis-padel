@@ -9,22 +9,36 @@ export default {
       type: 'string',
     },
     {
+      name: 'slug',
+      title: 'Slug (URL)',
+      type: 'slug',
+      options: { source: 'title', maxLength: 96 },
+      validation: (Rule: { required: () => { (): any; new(): any; error: { (arg0: string): any; new(): any; }; }; }) => Rule.required().error('Slug är obligatoriskt för att skapa en giltig URL.'),
+    },
+    {
       name: 'publishedAt',
       title: 'Publicerad',
       type: 'date',
       options: { dateFormat: 'YYYY-MM-DD' },
     },
     {
-      name: 'body',
-      title: 'Innehåll',
-      type: 'array',
-      of: [{ type: 'block' }],
+      name: 'excerpt',
+      title: 'Kort sammanfattning (visas på startsidan)',
+      type: 'text',
+      rows: 4,
+      description: 'Max 2–3 meningar – resten visas när man klickar på nyheten',
     },
     {
       name: 'image',
       title: 'Bild',
       type: 'image',
       options: { hotspot: true },
+    },
+    {
+      name: 'body',
+      title: 'Fullständigt innehåll',
+      type: 'array',
+      of: [{ type: 'block' }, { type: 'image' }],
     },
   ],
   preview: {
@@ -33,20 +47,8 @@ export default {
       date: 'publishedAt',
       media: 'image',
     },
-    prepare(selection: any) {
-    const { title, date, media } = selection
-    return {
-      title,
-      subtitle: date ? new Date(date).toLocaleDateString('sv-SE') : '',
-      media,
-    }
-  }
   },
   orderings: [
-    {
-      title: 'Publicerad, nyast först',
-      name: 'publishedAtDesc',
-      by: [{ field: 'publishedAt', direction: 'desc' }],
-    },
+    { title: 'Nyast först', name: 'dateDesc', by: [{ field: 'publishedAt', direction: 'desc' }] },
   ],
 }
