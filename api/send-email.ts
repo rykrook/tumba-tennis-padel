@@ -1,47 +1,46 @@
-export default function handler(req: any, res: any) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end()
-  }
 
+import emailjs from '@emailjs/nodejs'
+
+export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   const { name, email, phone, message, aktivitet, honeypot } = req.body
 
+  // Honeypot – blockerar bots
   if (honeypot) {
     return res.status(400).json({ error: 'Bot detected' })
   }
 
-  fetch('https://api.emailjs.com/api/v1.0/email/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      service_id: process.env.EMAILJS_SERVICE_ID,
-      template_id: process.env.EMAILJS_TEMPLATE_ID,
-      user_id: process.env.EMAILJS_PUBLIC_KEY,
-      template_params: {
-        from_name: name || 'Okänt namn',
-        from_email: email || 'ingen@email.se',
+  try {
+    await emailjs.send(
+      process.env.EMAILJS_SERVICE_ID as string,
+      process.env.EMAILJS_TEMPLATE_ID as string,
+      {
+        from_name: name,
+        from_email: email,
         phone: phone || 'Inget telefonnummer',
-        message: message || 'Inget meddelande',
-        aktivitet: aktivitet || 'Kontakt',
+        message,
+        aktivitet: aktivitet || 'Allmänt meddelande',
       },
-    }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        res.status(200).json({ success: true })
-      } else {
-        res.status(500).json({ error: 'EmailJS svarade inte OK' })
+      {
+        publicKey: process.env.EMAILJS_PUBLIC_KEY as string,
+        privateKey: process.env.EMAILJS_PRIVATE_KEY as string,
       }
-    })
-    .catch((error) => {
-      console.error('Email error:', error)
-      res.status(500).json({ error: 'Misslyckades skicka mail' })
-    })
+    )
+
+    res.status(200).json({ success: true })
+  } catch (error) {
+    console.error('EmailJS error:', error)
+    res.status(500).json({ error: 'Failed to send email' })
+  }
+}
+
+// Vercel behöver detta för att veta att det är en serverless function
+export const config = {
+  api: {
+    bodyParser: true,
+  },
 }
