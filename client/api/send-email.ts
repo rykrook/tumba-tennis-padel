@@ -23,6 +23,7 @@ export default async function handler(req: any, res: any) {
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
+        private_key: process.env.EMAILJS_PRIVATE_KEY,
         template_params: {
           name: name || 'Okänt namn',
           email: email || 'ingen@email.se',
