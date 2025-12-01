@@ -5,11 +5,15 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end()
   }
 
-  if (req.method !== 'POST') return res.status(405).end()
+  if (req.method !== 'POST') {
+    return res.status(405).end()
+  }
 
   const { name, email, phone, message, aktivitet, honeypot } = req.body
 
-  if (honeypot) return res.status(400).json({ error: 'Bot' })
+  if (honeypot) {
+    return res.status(400).json({ error: 'Bot detected' })
+  }
 
   try {
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -19,27 +23,27 @@ export default async function handler(req: any, res: any) {
         service_id: process.env.EMAILJS_SERVICE_ID,
         template_id: process.env.EMAILJS_TEMPLATE_ID,
         user_id: process.env.EMAILJS_PUBLIC_KEY,
-        private_key: process.env.EMAILJS_PRIVATE_KEY,
         template_params: {
-          from_name: name?.trim() || 'Okänt namn',
-          from_email: email?.trim() || 'no-reply@tumbatk.se',
-          phone: phone?.trim() || 'Inget telefonnummer',
-          message: message?.trim() || '(Inget meddelande)',
-          aktivitet: aktivitet?.trim() || 'Allmänt',
+          name: name || 'Okänt namn',
+          email: email || 'ingen@email.se',
+          phone: phone || 'Inget telefonnummer',
+          message: message || '(Inget meddelande)',
+          aktivitet: aktivitet || 'Kontakt',
+          time: new Date().toLocaleString('sv-SE')
         },
       }),
     })
 
-    const text = await response.text()
-    console.log('EmailJS response:', response.status, text)
-
     if (response.ok) {
-      return res.status(200).json({ success: true })
+      console.log('Mail skickat!')
+      res.status(200).json({ success: true })
     } else {
-      return res.status(400).json({ error: 'EmailJS 400', details: text })
+      const text = await response.text()
+      console.error('EmailJS error:', text)
+      res.status(500).json({ error: 'EmailJS svarade inte OK' })
     }
-  } catch (error: any) {
-    console.error('Email error:', error)
-    return res.status(500).json({ error: error.message })
+  } catch (error) {
+    console.error('Server error:', error)
+    res.status(500).json({ error: 'Misslyckades skicka mail' })
   }
 }
