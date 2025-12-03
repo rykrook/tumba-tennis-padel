@@ -47,7 +47,7 @@
             },
             {
               name: 'info',
-              title: 'Text under knappen (ålder, tid, pris)',
+              title: 'Text under knappen (t.ex. ålder)',
               type: 'string',
               description: 'T.ex. "4–6 år", "Torsdagar 18–20"',
             },
@@ -77,6 +77,13 @@
               type: 'string',
               description: 'T.ex. "Fyll i formuläret så kontaktar vi dig!"',
               hidden: ({ parent }: any) => parent?.anmalanTyp !== 'form',
+            },
+            {
+              name: 'detaljer',
+              title: 'Detaljerad beskrivning (visas i expanderad sektion)',
+              type: 'array',
+              of: [{ type: 'block' }],
+              description: 'Används för att ge en längre information om tider, förkunskaper och upplägg, som visas när användaren klickar på "Visa mer information".',
             },
           ],
           preview: {

@@ -99,5 +99,25 @@ export default {
         },
       ],
     },
+    {
+      name: 'heroButton',
+      title: 'Hero-knapp på startsidan',
+      type: 'object',
+      description: 'boka bana knapp som visas över videon på startsidan',
+      fields: [
+        {
+          name: 'buttonText',
+          title: 'Knapptext',
+          type: 'string',
+          initialValue: 'BOKA BANA PÅ MATCHI.SE',
+        },
+        {
+          name: 'url',
+          title: 'Länk',
+          type: 'url',
+          initialValue: 'https://www.matchi.se/facilities/tumbatk',
+        },
+      ],
+    },
   ],
 }

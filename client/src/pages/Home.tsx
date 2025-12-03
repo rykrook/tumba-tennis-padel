@@ -5,6 +5,7 @@ import NewsSection from '../components/NewsSection'
 import BookCourtCTA from '../components/BookCourtCTA'
 import HallOfFameCard from '../components/HallOfFameCard'
 import KeyServicesCTA from '../components/KeyServicesCTA'
+import BookCourtHeroButton from '../components/BookCourtHeroButton'
 
 const portableTextComponents = {
   block: {
@@ -65,12 +66,15 @@ export default function Home() {
       client.fetch(`*[_type == "siteSettings"][0]{
       keyServices,
       bookCourt
+    }`),
+    client.fetch(`*[_type == "siteSettings"][0]{
+      heroButton
     }`)
-    ]).then(([homeData, newsData, hofData, settings]) => {
+    ]).then(([homeData, newsData, hofData, settings, heroButtonData]) => {
       setHome(homeData)
       setNews(newsData || [])
       setHallOfFame(hofData || [])
-      setSiteSettings(settings)
+      setSiteSettings({ ...(settings || {}), ...(heroButtonData || {}) })
     })
   }, [])
 
@@ -92,6 +96,9 @@ export default function Home() {
           <div className="animate-fadeIn">
             <PortableText value={home?.welcome || []} components={portableTextComponents} />
           </div>
+          <div className="mt-12">
+            <BookCourtHeroButton data={siteSettings?.heroButton || {}} />
+            </div>
         </div>
       </section>
 

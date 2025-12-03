@@ -3,6 +3,9 @@ import { Mail, Phone, MapPin } from 'lucide-react'
 import { client } from '../lib/sanity'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
 
+// **IMPORTERA EMAILJS CLIENT SDK**
+import emailjs from '@emailjs/browser'
+
 interface KontaktData {
   address: string;
   phone: string;
@@ -18,7 +21,13 @@ interface FormData {
   honeypot: string;
 }
 
-// Komponenten för Portable Text
+// Hämta nycklar från miljövariablerna (måste ha VITE_ prefix i Vite)
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string
+
+
+// Komponenten för Portable Text (oförändrad)
 const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
@@ -42,14 +51,14 @@ export default function Kontakt() {
   const [kontaktData, setKontaktData] = useState<KontaktData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // HÄMTA KONTAKTDATA FRÅN SANITY
+  // HÄMTA KONTAKTDATA FRÅN SANITY (oförändrad)
   useEffect(() => {
     const query = `*[_type == "kontakt"][0]{
-            address,
-            phone,
-            email,
-            content
-        }`
+        address,
+        phone,
+        email,
+        content
+      }`
 
     client.fetch(query).then((data) => {
       setKontaktData(data)
@@ -60,44 +69,61 @@ export default function Kontakt() {
     })
   }, [])
 
-  // Hanterar alla input-förändringar
+  // Hanterar alla input-förändringar (oförändrad)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  // FORMULÄR SUBMIT LOGIK
+  // **UPPDATERAD FORMULÄR SUBMIT LOGIK - Använder EmailJS Client SDK**
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.honeypot) return // HONEYPOT KONTROLL
 
+    // Validering av nycklar
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+        console.error("EmailJS-nycklar saknas i miljövariablerna!")
+        setStatus('error')
+        return
+    }
+
     setStatus('sending')
 
-    try {
-      const res = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone || 'Inget telefonnummer',
-          message: formData.message,
-          aktivitet: 'Kontakt',
-          honeypot: formData.honeypot,
-        }),
-      })
+    // Förbered data som matchar din EmailJS-mall-variabler (t.ex. {{user_name}})
+    const templateParams = {
+        user_name: formData.name,
+        user_email: formData.email,
+        user_phone: formData.phone || 'Inget telefonnummer',
+        user_message: formData.message,
+        aktivitet: 'Kontakt',
+        subject_line: `Ny kontaktförfrågan: ${formData.name}`,
+    };
 
-      if (res.ok) {
-        setStatus('success')
-        setFormData({ name: '', email: '', phone: '', message: '', honeypot: '' })
-      } else {
+
+    try {
+        // Skicka mail direkt via EmailJS
+        const res = await emailjs.send(
+            SERVICE_ID, 
+            TEMPLATE_ID, 
+            templateParams, 
+            { publicKey: PUBLIC_KEY } // Autentiseras med Public Key
+        )
+
+        if (res.status === 200) {
+            console.log('Mail skickat framgångsrikt!', res.text);
+            setStatus('success')
+            // Rensa formuläret
+            setFormData({ name: '', email: '', phone: '', message: '', honeypot: '' })
+        } else {
+            console.error('EmailJS svarade med felkod:', res.status, res.text)
+            setStatus('error')
+        }
+    } catch (error) {
+        console.error('EmailJS fel (Client-side):', error)
         setStatus('error')
-      }
-    } catch {
-      setStatus('error')
     }
   }
 
-  // Laddnings- eller fel-state
+  // Laddnings- eller fel-state (oförändrad)
   if (isLoading) {
     return (
       <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
@@ -108,6 +134,7 @@ export default function Kontakt() {
 
 
   return (
+    // ... (resten av return-koden är oförändrad)
     <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <h1 className="text-5xl md:text-6xl font-black text-primary text-center mb-6">

@@ -1,7 +1,6 @@
-// client/src/components/HallOfFameCard.tsx
 import { PortableText } from '@portabletext/react'
 import { useState } from 'react'
-import { X, Trophy } from 'lucide-react' // Lade till Trophy-ikonen
+import { X, Trophy } from 'lucide-react'
 
 interface Member {
     name: string
@@ -31,22 +30,22 @@ export default function HallOfFameCard({ member }: { member: Member }) {
                     group-hover:shadow-2xl 
                 ">
                     {member.imageUrl ? (
-                        <img 
-                            src={member.imageUrl} 
-                            alt={member.name} 
-                            className="w-full h-72 object-cover border-b-4 border-accent transition duration-300 group-hover:border-primary" /* Tydlig kantlinje */
+                        <img
+                            src={member.imageUrl}
+                            alt={member.name}
+                            className="w-full h-72 object-cover border-b-4 border-accent transition duration-300 group-hover:border-primary" 
                         />
                     ) : (
                         <div className="bg-gray-100 h-72 flex items-center justify-center">
                             <Trophy className="w-16 h-16 text-accent/50" />
                         </div>
                     )}
-                    
+
                     {/* Textinnehåll */}
                     <div className="p-6">
-                        <h3 className="text-2xl font-extrabold text-primary mb-1">{member.name}</h3> {/* Större, primär rubrik */}
+                        <h3 className="text-2xl font-extrabold text-primary mb-1">{member.name}</h3> 
                         <p className="text-lg font-medium text-gray-600 border-t border-gray-100 pt-2 mt-2">
-                            Invald: <span className="text-accent font-bold">{member.year}</span> {/* Accent på årtalet */}
+                            Invald: <span className="text-accent font-bold">{member.year}</span>
                         </p>
                     </div>
                 </div>
@@ -54,30 +53,30 @@ export default function HallOfFameCard({ member }: { member: Member }) {
 
             {/* MODAL */}
             {isOpen && (
-                <div 
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 transition-opacity duration-300" 
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 transition-opacity duration-300"
                     onClick={() => setIsOpen(false)}
                 >
-                    <div 
-                        className="bg-white rounded-none shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-100 transition-transform duration-300" /* Fyrkantig modal */
+                    <div
+                        className="bg-white rounded-none shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-100 transition-transform duration-300" 
                         onClick={e => e.stopPropagation()}
                     >
-                        
+
                         {/* Stängningsknapp (Över bild) */}
                         <div className="absolute top-4 right-4 z-10">
-                            <button 
-                                onClick={() => setIsOpen(false)} 
+                            <button
+                                onClick={() => setIsOpen(false)}
                                 className="p-2 bg-white/70 backdrop-blur-sm text-gray-800 hover:bg-white transition-colors shadow-lg rounded-full"
                             >
-                                <X className="w-6 h-6" /> 
+                                <X className="w-6 h-6" />
                             </button>
                         </div>
-                        
+
                         {member.imageUrl && (
-                            <img 
-                                src={member.imageUrl} 
-                                alt={member.name} 
-                                className="w-full h-80 md:h-96 object-cover border-b-4 border-accent" 
+                           <img
+                                src={member.imageUrl}
+                                alt={member.name}
+                                className="w-full h-auto max-h-[60vh] object-contain border-b-4 border-accent mx-auto"
                             />
                         )}
 

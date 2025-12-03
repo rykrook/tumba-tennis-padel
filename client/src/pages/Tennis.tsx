@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
 import { client, urlFor } from '../lib/sanity'
 import { PortableText } from '@portabletext/react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import BookCourtCTA from '../components/BookCourtCTA'
+import emailjs from '@emailjs/browser'
+
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string
 
 export default function Tennis() {
   const [data, setData] = useState<any>(null)
   const [siteSettings, setSiteSettings] = useState<any>(null)
   const [sentForms, setSentForms] = useState<number[]>([])
+  const [openActivityIndex, setOpenActivityIndex] = useState<number | null>(null)
 
-useEffect(() => {
+  useEffect(() => {
     Promise.all([
       client.fetch(`*[_type == "tennis"][0]{
         heroImage,
@@ -21,7 +27,8 @@ useEffect(() => {
           info,
           anmalanTyp,
           url,
-          formText
+          formText,
+          detaljer
         }
       }`),
       client.fetch(`*[_type == "siteSettings"][0]{bookCourt}`)
@@ -31,28 +38,45 @@ useEffect(() => {
     })
   }, [])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>, index: number) => {
+ const handleSubmit = (e: React.FormEvent<HTMLFormElement>, index: number) => {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
-    if (formData.get('honeypot')) return
+    // HONEYPOT
+    if (formData.get('honeypot')) {
+        form.reset();
+        setSentForms(prev => [...prev, index]); // Falskt positivt, men blockerar botten
+        setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 8000);
+        return;
+    }
 
-    fetch('/api/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone') || 'Inget telefonnummer',
-        message: formData.get('message'),
+    // 1. Förbered EmailJS parametrar
+    const templateParams = {
+        user_name: formData.get('name') as string,
+        user_email: formData.get('email') as string,
+        user_phone: (formData.get('phone') as string) || 'Inget telefonnummer',
+        user_message: (formData.get('message') as string) || '(Inget meddelande)',
         aktivitet: data.aktiviteter[index].titel,
-      })
-    }).then(() => {
-      setSentForms(prev => [...prev, index])
-      form.reset()
-      setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 8000)
-    }).catch(() => alert('Något gick fel – prova igen!'))
+        subject_line: `NY ANMÄLAN: ${data.aktiviteter[index].titel}`,
+    }
+
+    // 2. Anropa EmailJS
+    emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        templateParams,
+        { publicKey: PUBLIC_KEY }
+    ).then(() => {
+        // Hantera framgång
+        setSentForms(prev => [...prev, index])
+        form.reset()
+        setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 8000)
+    }).catch((error) => {
+        // Hantera fel
+        console.error('EmailJS Anmälningsfel:', error);
+        alert('Något gick fel vid skickandet – prova igen eller kontakta oss direkt via mail.');
+    })
   }
 
   // 1. Laddningsskärm (Visas om data inte är laddad)
@@ -78,7 +102,9 @@ useEffect(() => {
 
   // Kontrollera om det finns några aktiviteter
   const hasAktiviteter = data.aktiviteter?.length > 0
-
+  const toggleDetails = (index: number) => {
+    setOpenActivityIndex(openActivityIndex === index ? null : index)
+  }
   // 2. Huvudrendering (Visas alltid när data har laddats)
   return (
     <>
@@ -144,37 +170,63 @@ useEffect(() => {
               </h2>
             </div>
 
-            {/* 1. LÄNKAR TILL AKTIVITETER */}
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-              {data.aktiviteter.map((akt: any, i: number) => (
-                <div key={i}>
-                  {akt.anmalanTyp === 'link' && akt.url && (
-                    <a
-                      href={akt.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex flex-col p-8 h-full rounded-xl border border-gray-200 bg-white shadow-lg transition-all duration-300 
-                          hover:border-primary hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1"
-                    >
-                      <div className="flex-grow">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                          {akt.titel}
-                        </h3>
-                        <p className="text-base text-gray-600 leading-relaxed">
-                          {akt.info}
-                        </p>
-                      </div>
+            {/* 1. KORT MED LÄNKAR OCH EXPANDERBARA DETALJER */}
+    <div className="max-w-full mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24 items-start">
+              {data.aktiviteter.map((akt: any, i: number) => {
+                const isLink = akt.anmalanTyp === 'link' && akt.url
+                const isExpanded = openActivityIndex === i
 
-                      <div className="pt-6 mt-auto flex items-center text-lg font-semibold text-primary">
-                        <span className="border-b-2 border-primary/50 group-hover:border-primary pb-0.5 transition-all">
-                          Anmäl dig nu
-                        </span>
-                        <ArrowRight className="w-5 h-5 ml-2 text-primary opacity-75 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                if (!isLink) return null 
+
+                return (
+                  <div key={i} className="rounded-xl border border-gray-200 bg-white shadow-lg flex flex-col transition-all duration-300">
+
+                    <div className="p-6 flex-grow">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">{akt.titel}</h3>
+
+                      <p className="text-base text-gray-600 leading-relaxed mb-4">
+                        {akt.info}
+                      </p>
+                    </div>
+
+                    {/* KNAPPAR: Länk och Detaljer */}
+                    <div className="p-6 pt-0 border-t border-gray-100 flex flex-col">
+
+                      {/* DETALJKNAPP (om detaljer finns) */}
+                      {akt.detaljer && (
+                        <button
+                          onClick={() => toggleDetails(i)}
+                          className={`flex items-center justify-between w-full py-3 px-4 mb-3 border ${isExpanded ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} transition-all duration-300 font-semibold`}
+                        >
+                          <span>{isExpanded ? 'Dölj detaljer' : 'Visa mer information'}</span>
+                          <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'transform rotate-180' : ''}`} />
+                        </button>
+                      )}
+
+                      {/* ANMÄLNINGSLÄNK */}
+                      <a
+                        href={akt.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white text-lg font-semibold hover:bg-secondary transition-colors shadow-sm uppercase tracking-wider mt-2"
+                      >
+                        Anmäl dig nu
+                        <ArrowRight className="w-5 h-5 ml-1" />
+                      </a>
+                    </div>
+
+                    {/* EXPANDERBAR SEKTION (Detaljer) */}
+                    {isExpanded && akt.detaljer && (
+                      <div className="p-6 pt-0 border-t border-gray-200 bg-gray-50">
+                        <div className="prose max-w-none text-gray-700 pt-4 pb-2">
+                          {/* Använd PortableText här för att rendera dina detaljer */}
+                          <PortableText value={akt.detaljer} />
+                        </div>
                       </div>
-                    </a>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                )
+              })}
             </div>
 
             {/* 2. FORMULÄR SEKTION */}
@@ -248,13 +300,13 @@ useEffect(() => {
         ) : (
           <div className="max-w-5xl mx-auto px-4 py-0 text-center">
             <div className="bg-white shadow-lg p-12 max-w-3xl mx-auto border-t-4 border-gray-200">
-              
+
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 text-indigo-600 mb-6">
                 <svg className="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              
+
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 Inga aktiviteter just nu
               </h2>
@@ -262,7 +314,7 @@ useEffect(() => {
                 Håll utkik – nya aktiviteter läggs upp löpande!
               </p>
               <BookCourtCTA data={siteSettings?.bookCourt || {}} />
-              
+
             </div>
           </div>
         )}

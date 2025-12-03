@@ -140,7 +140,7 @@ export default function NewsArchive() {
   }
 
   return (
-    <main className="pt-24 md:pt-32 pb-20 bg-gray-50">
+  <main className="pt-20 md:pt-14 pb-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         
         {/* Sidhuvud */}

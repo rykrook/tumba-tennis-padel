@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react'
 import { client, urlFor } from '../lib/sanity'
 import { PortableText } from '@portabletext/react'
 import BookCourtCTA from '../components/BookCourtCTA'
+import emailjs from '@emailjs/browser'
+
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string
 
 export default function Padel() {
   const [data, setData] = useState<any>(null)
@@ -33,22 +38,49 @@ useEffect(() => {
     const form = e.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
-    fetch('/api/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone') || 'Inget telefonnummer',
-        message: formData.get('message'),
-        aktivitet: data.aktiviteter[index].aktivitet,
-      })
-    }).then(() => {
+    // HONEYPOT KONTROLL
+    if (formData.get('honeypot')) {
+      form.reset()
+      setSentForms(prev => [...prev, index])
+      setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 8000)
+      return
+    }
+
+    // Validering av nycklar
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      console.error("EmailJS-nycklar saknas i miljövariablerna!")
+      alert('Något gick fel vid skickandet – saknar konfigurationsnycklar!') 
+      return
+    }
+
+    // Förbered data som matcharEmailJS-mall
+    const templateParams = {
+      user_name: formData.get('name') as string,
+      user_email: formData.get('email') as string,
+      user_phone: (formData.get('phone') as string) || 'Inget telefonnummer',
+      user_message: (formData.get('message') as string) || '(Inget meddelande)',
+      aktivitet: data.aktiviteter[index].aktivitet,
+      subject_line: `NY ANMÄLAN (Padel): ${data.aktiviteter[index].aktivitet}`,
+    }
+
+    // Anropa EmailJS
+    emailjs.send(
+      SERVICE_ID,
+      TEMPLATE_ID,
+      templateParams,
+      { publicKey: PUBLIC_KEY }
+    ).then(() => {
+      // Hantera framgång
       setSentForms(prev => [...prev, index])
       form.reset()
       setTimeout(() => setSentForms(prev => prev.filter(i => i !== index)), 8000)
-    }).catch(() => alert('Något gick fel – prova igen!'))
+    }).catch((error) => {
+      // Hantera fel
+      console.error('EmailJS Anmälningsfel (Padel):', error);
+      alert('Något gick fel – prova igen!');
+    })
   }
+
 
   // 1. Laddningsskärm
   if (!data) {
