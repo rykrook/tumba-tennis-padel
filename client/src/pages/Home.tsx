@@ -81,7 +81,7 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative h-[70vh] md:h-[90vh] mt-[-5rem] pt-20 flex items-center justify-center overflow-hidden">
+      <section className="relative h-[90vh] md:h-[90vh] mt-[-5rem] pt-20 flex items-center justify-center overflow-hidden">
         {home?.videoUrl ? (
           <video autoPlay muted loop playsInline className="absolute top-0 left-0 -z-30 w-full h-full object-cover">
             <source src={home.videoUrl} type="video/mp4" />
