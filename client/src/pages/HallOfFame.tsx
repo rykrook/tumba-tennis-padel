@@ -29,7 +29,7 @@ export default function HallOfFame() {
 
   if (members.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-32 text-center mt-[-5rem] pt-20"> {/* Anpassad för navbar */}
+      <div className="max-w-7xl mx-auto px-4 py-32 text-center mt-[-2rem] pt-20">
         <h1 className="text-5xl font-black text-primary mb-12">
           <Trophy className="w-12 h-12 inline-block mr-4 text-accent" /> Hall of Fame
         </h1>

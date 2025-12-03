@@ -67,7 +67,7 @@ export default function Home() {
       keyServices,
       bookCourt
     }`),
-    client.fetch(`*[_type == "siteSettings"][0]{
+      client.fetch(`*[_type == "siteSettings"][0]{
       heroButton
     }`)
     ]).then(([homeData, newsData, hofData, settings, heroButtonData]) => {
@@ -98,7 +98,7 @@ export default function Home() {
           </div>
           <div className="mt-12">
             <BookCourtHeroButton data={siteSettings?.heroButton || {}} />
-            </div>
+          </div>
         </div>
       </section>
 
@@ -113,11 +113,27 @@ export default function Home() {
             Hall of Fame
           </h2>
 
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {hallOfFame.map((member, i) => (
-              <HallOfFameCard key={member._id || i} member={member} />
-            ))}
-          </div>
+          {hallOfFame && hallOfFame.length > 0 ? (
+            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {hallOfFame.map((member, i) => (
+                <HallOfFameCard key={member._id || i} member={member} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center p-10 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
+              <p className="text-xl text-gray-700 mb-6">
+                Vi har för närvarande inga utsedda medlemmar i vår Hall of Fame.
+                Håll utkik! Nya framstående individer kommer att läggas till i framtiden.
+              </p>
+              <a
+                href="/hall-of-fame"
+                className="inline-block px-8 py-3 text-lg font-semibold text-white bg-accent hover:bg-accent-dark rounded-md transition duration-300"
+              >
+                Läs mer om Hall of Fame
+              </a>
+            </div>
+          )}
+
         </div>
       </section>
     </>
