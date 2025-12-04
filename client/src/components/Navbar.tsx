@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import {
   Users, Trophy, Calendar, Phone, MapPin,
-  Menu, X, ChevronDown, UserCog, ChevronRight
+  Menu, X, ChevronDown, UserCog, ChevronRight,
+  Newspaper
 } from 'lucide-react'
 import logo from '../assets/tumbatk.png'
 
@@ -73,6 +74,9 @@ export default function Navbar() {
               >
                 <div className="h-5 -mt-5"></div>
                 <div className="bg-white text-gray-800 rounded-xl shadow-2xl border border-accent/20 overflow-hidden">
+                  <Link to="/nyheter" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
+                    <Newspaper className="w-5 h-5 text-primary" /> Nyheter
+                  </Link>
                   <Link to="/kontakt" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
                     <Phone className="w-5 h-5 text-primary" /> Kontakt
                   </Link>
