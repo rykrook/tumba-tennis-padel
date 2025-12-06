@@ -39,7 +39,7 @@ export default function NewsSection({ news, title = "Senaste nytt" }: NewsSectio
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 items-start">
           {news.map((item) => {
             const slug = item.slug;
 
@@ -49,15 +49,18 @@ export default function NewsSection({ news, title = "Senaste nytt" }: NewsSectio
                 to={`/nyheter/${slug || item._id}`}
                 className="group flex flex-col h-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.01] overflow-hidden"
               >
-                <div className="relative overflow-hidden aspect-[4/3] bg-gray-100">
+                <div className="relative w-full bg-gray-100">
                   {item.image ? (
                     <img
-                      src={urlFor(item.image).width(800).height(500).url()}
+
+                      src={urlFor(item.image).width(800).url()}
                       alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+
+                      className="w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full bg-primary/20 flex items-center justify-center">
+
+                    <div className="w-full aspect-video bg-primary/20 flex items-center justify-center">
                       <span className="text-primary font-medium">Bild saknas</span>
                     </div>
                   )}
