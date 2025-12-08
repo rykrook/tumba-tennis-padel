@@ -38,6 +38,7 @@ export default {
       name: 'body',
       title: 'Fullständigt innehåll',
       type: 'array',
+      description: 'Huvudinnehållet för nyheten, går också att formatera en mailadress som länk och skriva mailto:namn@adress.com',
       of: [{ type: 'block' }, { type: 'image' }],
     },
   ],
