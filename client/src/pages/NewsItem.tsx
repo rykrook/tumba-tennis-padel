@@ -29,11 +29,11 @@ const portableTextComponents = {
     },
     types: {
         image: (props: any) => (
-            <figure className="my-10 rounded-lg overflow-hidden shadow-xl">
+            <figure className="my-10 rounded-lg overflow-hidden shadow-xl w-full bg-gray-50">
                 <img
                     src={urlFor(props.value).width(1200).url()}
                     alt={props.value.alt || props.value.caption || 'Nyhetsbild'}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-auto max-h-[600px] object-contain mx-auto"
                 />
             </figure>
         ),
@@ -45,51 +45,51 @@ export default function NewsItem() {
     const [news, setNews] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
 
-   useEffect(() => {
-  if (!slug) return
+    useEffect(() => {
+        if (!slug) return
 
-  client
-    .fetch(
-      `*[_type == "news" && slug.current == $slug][0]{
+        client
+            .fetch(
+                `*[_type == "news" && slug.current == $slug][0]{
         title,
         publishedAt,
         image,
         excerpt,
         body
       }`,
-      { slug }
-    )
-    .then((data) => {
-      if (!data) {
-        setError("Nyheten hittades inte.")
-      } else {
-        setNews(data)
-      }
-    })
-    .catch((err) => {
-      console.error('Fetch error:', err)
-      setError("Kunde inte ladda nyheten.")
-    })
-}, [slug])
+                { slug }
+            )
+            .then((data) => {
+                if (!data) {
+                    setError("Nyheten hittades inte.")
+                } else {
+                    setNews(data)
+                }
+            })
+            .catch((err) => {
+                console.error('Fetch error:', err)
+                setError("Kunde inte ladda nyheten.")
+            })
+    }, [slug])
 
     if (!news && !error) {
-          return (
-      <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
-        <p className="text-xl text-primary">Laddar nyheter...</p>
-      </div>
-    )
+        return (
+            <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
+                <p className="text-xl text-primary">Laddar nyheter...</p>
+            </div>
+        )
     }
 
     if (error) {
-    return (
-      <div className="min-h-screen pt-40 text-center">
-        <p className="text-2xl text-red-600 font-bold mb-6">{error}</p>
-        <Link to="/" className="text-primary hover:underline">
-          ← Tillbaka till startsidan
-        </Link>
-      </div>
-    )
-  }
+        return (
+            <div className="min-h-screen pt-40 text-center">
+                <p className="text-2xl text-red-600 font-bold mb-6">{error}</p>
+                <Link to="/" className="text-primary hover:underline">
+                    ← Tillbaka till startsidan
+                </Link>
+            </div>
+        )
+    }
 
     return (
         <article className="pt-24 md:pt-32 pb-20 bg-white">
@@ -116,11 +116,11 @@ export default function NewsItem() {
                 </header>
 
                 {news.image && (
-                    <figure className="mb-10 rounded-lg overflow-hidden shadow-2xl border-4 border-accent/20">
+                    <figure className="mb-10 rounded-lg overflow-hidden shadow-2xl border-4 border-accent/20 bg-gray-100">
                         <img
-                            src={urlFor(news.image).width(1000).url()}
+                            src={urlFor(news.image).width(1200).url()}
                             alt={news.title}
-                            className="w-full h-auto object-cover"
+                            className="w-full h-auto max-h-[600px] object-contain mx-auto"
                         />
                     </figure>
                 )}
