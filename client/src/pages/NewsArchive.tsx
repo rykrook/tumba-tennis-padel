@@ -19,7 +19,7 @@ export default function NewsArchive() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Använd useSearchParams för att hämta aktuell sida från URL:en (t.ex. /nyheter?page=2)
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1');
@@ -76,11 +76,10 @@ export default function NewsArchive() {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-4 py-2 mx-1 rounded-lg font-semibold transition-colors ${
-            i === currentPage 
-              ? 'bg-accent text-white shadow-md' 
+          className={`px-4 py-2 mx-1 rounded-lg font-semibold transition-colors ${i === currentPage
+              ? 'bg-accent text-white shadow-md'
               : 'bg-white text-primary border border-gray-200 hover:bg-gray-100'
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -92,33 +91,31 @@ export default function NewsArchive() {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`p-2 rounded-lg transition-colors ${
-            currentPage === 1 
-              ? 'text-gray-400 cursor-not-allowed' 
+          className={`p-2 rounded-lg transition-colors ${currentPage === 1
+              ? 'text-gray-400 cursor-not-allowed'
               : 'text-primary hover:text-accent'
-          }`}
+            }`}
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        
+
         {pages}
 
         {/* Nästa knapp */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg transition-colors ${
-            currentPage === totalPages 
-              ? 'text-gray-400 cursor-not-allowed' 
+          className={`p-2 rounded-lg transition-colors ${currentPage === totalPages
+              ? 'text-gray-400 cursor-not-allowed'
               : 'text-primary hover:text-accent'
-          }`}
+            }`}
         >
           <ChevronRight className="w-6 h-6" />
         </button>
       </div>
     );
   };
-  
+
   if (loading) {
     return (
       <div className="min-h-screen pt-40 flex justify-center items-center bg-gray-50">
@@ -140,9 +137,9 @@ export default function NewsArchive() {
   }
 
   return (
-  <main className="pt-20 md:pt-14 pb-20 bg-gray-50">
+    <main className="pt-20 md:pt-14 pb-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        
+
         {/* Sidhuvud */}
         <header className="text-center mb-12 md:mb-16">
           <h1 className="text-5xl md:text-6xl font-extrabold text-primary mb-4">
@@ -157,22 +154,30 @@ export default function NewsArchive() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {news.length > 0 ? (
             news.map((item) => (
-              <Link 
-                key={item._id} 
-                to={`/nyheter/${item.slug}`} 
-                className="group flex flex-col h-full bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-accent" 
+              <Link
+                key={item._id}
+                to={`/nyheter/${item.slug}`}
+                className="group flex flex-col h-full bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-t-4 border-accent"
               >
-                <div className="relative overflow-hidden aspect-[4/3] bg-gray-100">
-                  {item.image && (
-                    <img 
-                      src={urlFor(item.image).width(400).height(300).url()} 
-                      alt={item.title} 
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" 
+                <div className="relative overflow-hidden aspect-[16/9] bg-gray-50 flex items-center justify-center border-b border-gray-100">
+                  {item.image ? (
+                    <img
+                      src={urlFor(item.image).width(600).url()}
+                      alt={item.title}
+
+
+
+                      className="max-w-full max-h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                     />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                      <span className="text-primary/40 font-medium text-sm">Bild saknas</span>
+                    </div>
                   )}
+
                   {item.publishedAt && (
-                    <div className="absolute top-0 left-0 bg-white/95 backdrop-blur-sm px-3 py-1.5 border-b-2 border-r-2 border-gray-200">
-                      <time className="text-xs font-semibold tracking-wider text-primary uppercase">
+                    <div className="absolute top-0 left-0 bg-white/95 backdrop-blur-sm px-3 py-1.5 border-b border-r border-gray-200 z-10">
+                      <time className="text-xs font-bold tracking-wider text-primary uppercase">
                         {new Date(item.publishedAt).toLocaleDateString('sv-SE', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </time>
                     </div>
@@ -180,16 +185,18 @@ export default function NewsArchive() {
                 </div>
 
                 <div className="flex flex-col flex-grow p-5">
-                  <h2 className="text-xl font-bold text-gray-900 leading-snug group-hover:text-accent transition-colors mb-2">
+                  <h2 className="text-xl font-bold text-gray-900 leading-snug group-hover:text-accent transition-colors mb-2 line-clamp-2">
                     {item.title}
                   </h2>
-                  <p className="text-gray-700 text-sm line-clamp-3 mb-4 flex-grow">
+                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow leading-relaxed">
                     {item.excerpt || 'Ingen sammanfattning tillgänglig.'}
                   </p>
-                  
-                  <div className="flex items-center text-sm font-semibold text-accent hover:text-primary transition-colors mt-auto pt-3 border-t border-gray-100">
-                    Läs mer
-                    <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
+
+                  <div className="flex items-center text-sm font-bold text-accent hover:text-primary transition-colors mt-auto pt-3 border-t border-gray-100">
+                    <span className="pb-0.5 border-b-2 border-transparent group-hover:border-accent transition-all">
+                      Läs mer
+                    </span>
+                    <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                   </div>
                 </div>
               </Link>
@@ -201,9 +208,8 @@ export default function NewsArchive() {
           )}
         </div>
 
-        {/* Sidnumrering */}
         {renderPagination()}
-        
+
       </div>
     </main>
   );

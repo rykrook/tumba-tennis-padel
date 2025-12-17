@@ -46,28 +46,24 @@ export default function NewsSection({ news, title = "Senaste nytt" }: NewsSectio
             return (
               <Link
                 key={item._id}
-                to={`/nyheter/${slug || item._id}`}
-                className="group flex flex-col h-full bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.01] overflow-hidden"
+                to={`/nyheter/${slug}`}
+                className="group flex flex-col h-full bg-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden border border-gray-100 rounded-lg"
               >
-                <div className="relative w-full bg-gray-100">
+                <div className="relative w-full aspect-[16/9] bg-gray-50 flex items-center justify-center overflow-hidden border-b border-gray-100">
                   {item.image ? (
                     <img
-
                       src={urlFor(item.image).width(800).url()}
                       alt={item.title}
-
-                      className="w-full h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                      className="max-w-full max-h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   ) : (
-
-                    <div className="w-full aspect-video bg-primary/20 flex items-center justify-center">
-                      <span className="text-primary font-medium">Bild saknas</span>
+                    <div className="w-full h-full bg-primary/5 flex items-center justify-center">
+                      <span className="text-primary/40 font-medium">Bild saknas</span>
                     </div>
                   )}
-
                   {item.publishedAt && (
-                    <div className="absolute top-0 left-0 bg-white/95 backdrop-blur-sm px-3 py-1.5 border-b-2 border-r-2 border-gray-200">
-                      <time className="text-xs font-semibold tracking-wider text-primary uppercase">
+                    <div className="absolute top-0 left-0 bg-white/95 backdrop-blur-sm px-3 py-1.5 border-b border-r border-gray-200 shadow-sm z-10">
+                      <time className="text-xs font-bold tracking-wider text-primary uppercase">
                         {new Date(item.publishedAt).toLocaleDateString('sv-SE', {
                           month: 'short',
                           day: 'numeric'
@@ -78,17 +74,17 @@ export default function NewsSection({ news, title = "Senaste nytt" }: NewsSectio
                 </div>
 
                 <div className="flex flex-col flex-grow p-6">
-                  <h3 className="text-xl font-bold text-gray-900 leading-snug group-hover:text-accent transition-colors mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 leading-snug group-hover:text-accent transition-colors mb-3 line-clamp-2">
                     {item.title}
                   </h3>
 
-                  <div className="text-gray-700 text-base leading-normal line-clamp-3 mb-4 flex-grow">
-                    {item.excerpt || 'Ingen sammanfattning tillgänglig'}
+                  <div className="text-gray-600 text-base leading-relaxed line-clamp-3 mb-6 flex-grow">
+                    {item.excerpt || 'Läs mer om nyheten...'}
                   </div>
 
-                  <div className="flex items-center text-sm font-semibold text-accent hover:text-primary transition-colors mt-auto pt-4 border-t border-gray-100">
-                    <span className="pb-0.5 border-b border-accent/50 group-hover:border-accent transition-all">
-                      Läs mer
+                  <div className="flex items-center text-sm font-bold text-accent hover:text-primary transition-colors mt-auto pt-4 border-t border-gray-100">
+                    <span className="pb-0.5 border-b-2 border-transparent group-hover:border-accent transition-all">
+                      Läs hela artikeln
                     </span>
                     <ArrowRight className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                   </div>
@@ -101,7 +97,7 @@ export default function NewsSection({ news, title = "Senaste nytt" }: NewsSectio
         <div className="mt-12 md:hidden">
           <Link
             to="/nyheter"
-            className="w-full py-3 block text-center border border-accent text-accent hover:bg-accent/10 transition-colors font-semibold"
+            className="w-full py-4 block text-center border-2 border-accent text-accent hover:bg-accent hover:text-white transition-colors font-bold rounded-lg"
           >
             Visa alla nyheter
           </Link>
