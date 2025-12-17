@@ -1,5 +1,4 @@
-﻿
-export default {
+﻿export default {
   name: 'padelaktivitet',
   title: 'Padel – Sidan & Anmälan',
   type: 'document',
@@ -40,7 +39,7 @@ export default {
           fields: [
             {
               name: 'aktivitet',
-              title: 'Aktivitet',
+              title: 'Aktivitet / Titel',
               type: 'string',
               description: 'T.ex. "Americano Torsdagar"',
             },
@@ -50,15 +49,43 @@ export default {
               type: 'string',
             },
             {
-              name: 'showForm',
-              title: 'Visa anmälningsformulär?',
-              type: 'boolean',
-              initialValue: true,
+              name: 'anmalanTyp',
+              title: 'Typ av anmälan',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Länk (Matchi etc.)', value: 'link' },
+                  { title: 'Kontaktformulär', value: 'form' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'link',
+            },
+            {
+              name: 'url',
+              title: 'Länk (om "Länk" vald)',
+              type: 'url',
+              hidden: ({ parent }: any) => parent?.anmalanTyp !== 'link',
+            },
+            {
+              name: 'formText',
+              title: 'Text ovanför formuläret (om "Kontaktformulär" vald)',
+              type: 'string',
+              description: 'T.ex. "Fyll i formuläret så kontaktar vi dig!"',
+              hidden: ({ parent }: any) => parent?.anmalanTyp !== 'form',
+            },
+            {
+              name: 'detaljer',
+              title: 'Detaljerad beskrivning (Valfritt)',
+              type: 'array',
+              of: [{ type: 'block' }],
+              description: 'Längre information om tider, förkunskaper och upplägg',
             },
           ],
           preview: {
             select: {
               title: 'aktivitet',
+              subtitle: 'info',
             },
           },
         },
