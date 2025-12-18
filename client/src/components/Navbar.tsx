@@ -6,7 +6,7 @@ import {
   Menu, X, ChevronDown, UserCog, ChevronRight,
   Newspaper
 } from 'lucide-react'
-import logo from '../assets/tumbatk.png'
+import logo from '../assets/tumbatk_jul.png'
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
