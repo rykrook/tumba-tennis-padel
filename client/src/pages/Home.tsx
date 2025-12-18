@@ -6,6 +6,7 @@ import BookCourtCTA from '../components/BookCourtCTA'
 import HallOfFameCard from '../components/HallOfFameCard'
 import KeyServicesCTA from '../components/KeyServicesCTA'
 import BookCourtHeroButton from '../components/BookCourtHeroButton'
+import { Link } from 'react-router-dom'
 
 const portableTextComponents = {
   block: {
@@ -114,23 +115,50 @@ export default function Home() {
           </h2>
 
           {hallOfFame && hallOfFame.length > 0 ? (
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {hallOfFame.map((member, i) => (
-                <HallOfFameCard key={member._id || i} member={member} />
-              ))}
-            </div>
+            <>
+              {/* grid visar max 4 personer */}
+              <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+                {hallOfFame.slice(0, 4).map((member: any, i: number) => (
+                  member.slug ? (
+                    <Link
+                      key={i}
+                      to={`/hall-of-fame/${member.slug}`}
+                      className="block h-full transition-transform hover:-translate-y-2"
+                    >
+                      <HallOfFameCard member={member} />
+                    </Link>
+                  ) : (
+                    // Om slug saknas (fallback)
+                    <div key={i}>
+                      <HallOfFameCard member={member} />
+                    </div>
+                  )
+                ))}
+              </div>
+
+              {/* KNAPP FÖR ATT SE ALLA */}
+              <div className="text-center">
+                <Link
+                  to="/hall-of-fame"
+                  className="inline-block px-8 py-3 text-lg font-semibold text-white bg-accent hover:bg-accent-dark rounded-md transition duration-300 shadow-md hover:shadow-lg"
+                >
+                  Visa hela Hall of Fame
+                </Link>
+              </div>
+            </>
           ) : (
+            // OM LISTAN ÄR TOM
             <div className="text-center p-10 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
               <p className="text-xl text-gray-700 mb-6">
                 Vi har för närvarande inga utsedda medlemmar i vår Hall of Fame.
                 Håll utkik! Nya framstående individer kommer att läggas till i framtiden.
               </p>
-              <a
-                href="/hall-of-fame"
+              <Link
+                to="/hall-of-fame"
                 className="inline-block px-8 py-3 text-lg font-semibold text-white bg-accent hover:bg-accent-dark rounded-md transition duration-300"
               >
                 Läs mer om Hall of Fame
-              </a>
+              </Link>
             </div>
           )}
 

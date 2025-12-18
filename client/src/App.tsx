@@ -13,6 +13,7 @@ import Footer from './components/Footer'
 import { useEffect } from 'react'
 import NewsItem from './pages/NewsItem'
 import NewsArchive from './pages/NewsArchive'
+import HallOfFameMember from './pages/HallOfFameMember'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -39,6 +40,7 @@ function App() {
             <Route path="/kontakt" element={<Kontakt />} />
             <Route path="/hitta-hit" element={<HittaHit />} />
             <Route path="/hall-of-fame" element={<HallOfFame />} />
+            <Route path="/hall-of-fame/:slug" element={<HallOfFameMember />} />
             <Route path="/tranare-styrelsen" element={<TranareStyrelsen />} />
             <Route path="/träningsdagar" element={<Traningsdagar />} />
             <Route path="/nyheter" element={<NewsArchive />} />
