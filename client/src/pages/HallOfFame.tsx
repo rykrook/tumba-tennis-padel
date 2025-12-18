@@ -45,7 +45,7 @@ export default function HallOfFame() {
         </h1>
 
         <p className="text-lg md:text-xl text-gray-700 text-center max-w-3xl mx-auto mb-16 border-b border-primary/10 pb-8">
-          Här hedrar vi de medlemmar, tränare och styrelseledamöter som genom åren har gjort en exceptionell insats för Tumba Tennisklubb. Deras engagemang och prestationer är en inspiration för oss alla.
+          Här hedrar vi de medlemmar, tränare och styrelseledamöter som genom åren har gjort en exceptionell insats. Deras engagemang och prestationer är en inspiration för oss alla.
         </p>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
