@@ -11,6 +11,7 @@ import TranareStyrelsen from './pages/TranareStyrelsen'
 import Traningsdagar from './pages/Traningsdagar'
 import Footer from './components/Footer'
 import { useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import NewsItem from './pages/NewsItem'
 import NewsArchive from './pages/NewsArchive'
 import HallOfFameMember from './pages/HallOfFameMember'
@@ -49,6 +50,7 @@ function App() {
         </main>
       </div>
       <Footer />
+      <Analytics />
     </Router>
   )
 }
