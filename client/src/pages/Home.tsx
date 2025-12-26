@@ -6,7 +6,6 @@ import BookCourtCTA from '../components/BookCourtCTA'
 import HallOfFameCard from '../components/HallOfFameCard'
 import KeyServicesCTA from '../components/KeyServicesCTA'
 import BookCourtHeroButton from '../components/BookCourtHeroButton'
-import SnowContainer from '../components/SnowContainer'
 import { Link } from 'react-router-dom'
 
 const portableTextComponents = {
@@ -82,7 +81,6 @@ export default function Home() {
 
   return (
     <>
-    <SnowContainer />
       {/* HERO */}
       <section className="relative h-[90vh] md:h-[90vh] mt-[-5rem] pt-20 flex items-center justify-center overflow-hidden">
         {home?.videoUrl ? (
