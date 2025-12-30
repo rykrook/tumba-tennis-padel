@@ -6,36 +6,29 @@ import {
   Menu, X, ChevronDown, UserCog, ChevronRight,
   Newspaper
 } from 'lucide-react'
-import logo from '../assets/tumbatk.png'
+import logo from '../assets/tumbatklogga.png'
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
 
-  // Funktion för att stänga menyn
   const closeMobileMenu = () => setMobileOpen(false)
 
-  // Definiera vilka sökvägar som ska ha transparent bakgrund
   const transparentPages = ['/', '/tennis', '/padel']
   const isTransparent = transparentPages.includes(location.pathname)
 
-  // KLASS-DEFINITIONER
   const defaultBgClass = "bg-primary text-white shadow-xl";
-  
-  // Bestäm navbarens bakgrund och textfärg
+
   let navBackgroundClass;
   let iconColorClass;
 
   if (mobileOpen) {
-    // 1. Alltid primärfärg när mobilmenyn är öppen
     navBackgroundClass = defaultBgClass;
     iconColorClass = "text-white";
   } else if (isTransparent) {
-    // 2. Transparent på utvalda sidor när stängd
     navBackgroundClass = "bg-transparent text-white";
     iconColorClass = "text-white";
   } else {
-    // 3. Primärfärg på andra sidor när stängd (Fallback)
     navBackgroundClass = defaultBgClass;
     iconColorClass = "text-white";
   }
@@ -69,7 +62,7 @@ export default function Navbar() {
               </div>
 
               <div
-                className="dropdown hidden absolute top-full right-0 pt-5 w-80" // <--- Ändrade från left-1/2 till right-0 för att anpassa menyn till höger
+                className="dropdown hidden absolute top-full right-0 pt-5 w-80"
                 onMouseLeave={(e) => e.currentTarget.classList.add('hidden')}
               >
                 <div className="h-5 -mt-5"></div>
@@ -111,44 +104,39 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="fixed inset-0 bg-primary z-[99] flex flex-col justify-start md:hidden overflow-y-auto">
 
-          {/* TOPP: Stängningsknapp och Logotyp */}
           <div className="flex justify-between items-center p-6 border-b border-white/10">
-            {/* Logotyp (Flyttad upp för bättre varumärkesnärvaro) */}
-            <img src={logo} alt="Tumba TK" className="h-20 w-auto" /> 
-            
+            <img src={logo} alt="Tumba TK" className="h-20 w-auto" />
+
             <button
               onClick={closeMobileMenu}
-              // ÄNDRING: Tydlig accentfärg och större klickområde
               className="p-2 text-white hover:text-accent transition-colors"
             >
               <X className="w-8 h-8" />
             </button>
           </div>
 
-          {/* MITTEN: Länkar - Tydlig struktur och styling */}
           <div className="flex flex-col p-8 flex-grow">
 
-            {/* Huvudsektion: Stora länkar för primär navigering */}
             <div className="flex flex-col space-y-2 border-b border-white/10 pb-8 mb-8">
-              <Link 
-                to="/" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/"
+                onClick={closeMobileMenu}
                 className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
               >
                 Hem
                 <ChevronRight className="w-8 h-8 text-accent/50 group-hover:text-accent transition-colors" />
               </Link>
-              <Link 
-                to="/tennis" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/tennis"
+                onClick={closeMobileMenu}
                 className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
               >
                 Tennis
                 <ChevronRight className="w-8 h-8 text-accent/50 group-hover:text-accent transition-colors" />
               </Link>
-              <Link 
-                to="/padel" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/padel"
+                onClick={closeMobileMenu}
                 className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
               >
                 Padel
@@ -156,59 +144,55 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Underrubrik: Klubben */}
             <h4 className="text-sm font-semibold text-accent uppercase tracking-widest mb-4">Klubben</h4>
-            
-            {/* Klubben-länkar: Mindre textstorlek, konsekvent styling */}
+
             <div className="flex flex-col space-y-4">
-              <Link 
-                to="/nyheter" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/nyheter"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
                 <ChevronRight className="w-5 h-5 text-accent" /> Nyheter
               </Link>
-              <Link 
-                to="/kontakt" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/kontakt"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
                 <ChevronRight className="w-5 h-5 text-accent" /> Kontakt
               </Link>
-              <Link 
-                to="/hitta-hit" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/hitta-hit"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
                 <ChevronRight className="w-5 h-5 text-accent" /> Hitta hit
               </Link>
-              <Link 
-                to="/hall-of-fame" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/hall-of-fame"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
-                {/* Återanvänd Trophy ikon men i accentfärg för att bryta mönstret lite */}
                 <Trophy className="w-5 h-5 text-accent" /> Hall of Fame
               </Link>
-              <Link 
-                to="/tranare-styrelsen" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/tranare-styrelsen"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
                 <ChevronRight className="w-5 h-5 text-accent" /> Tränare & Styrelse
               </Link>
-              <Link 
-                to="/träningsdagar" 
-                onClick={closeMobileMenu} 
+              <Link
+                to="/träningsdagar"
+                onClick={closeMobileMenu}
                 className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
               >
                 <ChevronRight className="w-5 h-5 text-accent" /> Träningsdagar
               </Link>
             </div>
-            
+
           </div>
-          
-          {/* Nedre Delen (Kan användas för kontaktinfo/sociala medier om det behövs) */}
+
           <div className="p-8 border-t border-white/10">
             <p className="text-sm text-white/50">© 2024 Tumba Tennisklubb. Alla rättigheter reserverade.</p>
           </div>

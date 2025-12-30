@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin, Info } from 'lucide-react'
 import { client } from '../lib/sanity'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
 
-// **IMPORTERA EMAILJS CLIENT SDK**
 import emailjs from '@emailjs/browser'
+
+interface BookingNotice {
+  title: string;
+  text: string;
+  email?: string;
+}
 
 interface KontaktData {
   address: string;
   phone: string;
   email: string;
   content: any[];
+  bookingNotice?: BookingNotice;
 }
 
 interface FormData {
@@ -21,13 +27,10 @@ interface FormData {
   honeypot: string;
 }
 
-// Hämta nycklar från miljövariablerna (måste ha VITE_ prefix i Vite)
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string
 const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string
 
-
-// Komponenten för Portable Text (oförändrad)
 const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
@@ -51,13 +54,17 @@ export default function Kontakt() {
   const [kontaktData, setKontaktData] = useState<KontaktData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // HÄMTA KONTAKTDATA FRÅN SANITY (oförändrad)
   useEffect(() => {
     const query = `*[_type == "kontakt"][0]{
         address,
         phone,
         email,
-        content
+        content,
+        bookingNotice {
+          title,
+          text,
+          email
+        }
       }`
 
     client.fetch(query).then((data) => {
@@ -69,61 +76,57 @@ export default function Kontakt() {
     })
   }, [])
 
-  // Hanterar alla input-förändringar (oförändrad)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  // **UPPDATERAD FORMULÄR SUBMIT LOGIK - Använder EmailJS Client SDK**
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.honeypot) return // HONEYPOT KONTROLL
 
     // Validering av nycklar
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-        console.error("EmailJS-nycklar saknas i miljövariablerna!")
-        setStatus('error')
-        return
+      console.error("EmailJS-nycklar saknas i miljövariablerna!")
+      setStatus('error')
+      return
     }
 
     setStatus('sending')
 
-    // Förbered data som matchar din EmailJS-mall-variabler (t.ex. {{user_name}})
     const templateParams = {
-        user_name: formData.name,
-        user_email: formData.email,
-        user_phone: formData.phone || 'Inget telefonnummer',
-        user_message: formData.message,
-        aktivitet: 'Kontakt',
-        subject_line: `Ny kontaktförfrågan: ${formData.name}`,
+      user_name: formData.name,
+      user_email: formData.email,
+      user_phone: formData.phone || 'Inget telefonnummer',
+      user_message: formData.message,
+      aktivitet: 'Kontakt',
+      subject_line: `Ny kontaktförfrågan: ${formData.name}`,
     };
 
 
     try {
-        // Skicka mail direkt via EmailJS
-        const res = await emailjs.send(
-            SERVICE_ID, 
-            TEMPLATE_ID, 
-            templateParams, 
-            { publicKey: PUBLIC_KEY } // Autentiseras med Public Key
-        )
+      // Skicka mail direkt via EmailJS
+      const res = await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        templateParams,
+        { publicKey: PUBLIC_KEY } // Autentiseras med Public Key
+      )
 
-        if (res.status === 200) {
-            console.log('Mail skickat framgångsrikt!', res.text);
-            setStatus('success')
-            // Rensa formuläret
-            setFormData({ name: '', email: '', phone: '', message: '', honeypot: '' })
-        } else {
-            console.error('EmailJS svarade med felkod:', res.status, res.text)
-            setStatus('error')
-        }
-    } catch (error) {
-        console.error('EmailJS fel (Client-side):', error)
+      if (res.status === 200) {
+        console.log('Mail skickat framgångsrikt!', res.text);
+        setStatus('success')
+        // Rensa formuläret
+        setFormData({ name: '', email: '', phone: '', message: '', honeypot: '' })
+      } else {
+        console.error('EmailJS svarade med felkod:', res.status, res.text)
         setStatus('error')
+      }
+    } catch (error) {
+      console.error('EmailJS fel (Client-side):', error)
+      setStatus('error')
     }
   }
 
-  // Laddnings- eller fel-state (oförändrad)
   if (isLoading) {
     return (
       <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
@@ -134,7 +137,6 @@ export default function Kontakt() {
 
 
   return (
-    // ... (resten av return-koden är oförändrad)
     <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <h1 className="text-5xl md:text-6xl font-black text-primary text-center mb-6">
@@ -142,12 +144,11 @@ export default function Kontakt() {
         </h1>
 
         <p className="text-xl text-gray-700 text-center max-w-3xl mx-auto mb-12">
-          Har du frågor om kurser, bokningar eller tider? Fyll i formuläret så återkommer vi så snart som möjligt.
+          Har du frågor om kurser, träningsdagar eller annat? Fyll i formuläret så återkommer vi så snart som möjligt.
         </p>
 
         <div className="grid md:grid-cols-2 gap-12">
 
-          {/* 1. KLUBBINFO & EXTRA INFO (Dynamisk från Sanity) */}
           <div className="space-y-8 p-8 md:p-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b border-accent/50 pb-3">Klubbinfo</h2>
 
@@ -190,10 +191,37 @@ export default function Kontakt() {
               </div>
             )}
 
-            {/* EXTRA INFO FRÅN SANITY */}
             {kontaktData?.content && kontaktData.content.length > 0 && (
               <div className="pt-8 border-t border-gray-200">
                 <PortableText value={kontaktData.content} components={portableTextComponents} />
+              </div>
+            )}
+
+            {kontaktData?.bookingNotice?.title && (
+              <div className="mb-8 bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-lg shadow-sm">
+                <div className="flex items-start gap-4">
+                  <Info className="w-6 h-6 text-amber-600 mt-1 shrink-0" />
+                  <div>
+                    <h3 className="text-base font-bold text-amber-900 mb-1">
+                      {kontaktData.bookingNotice.title}
+                    </h3>
+                    <p className="text-sm text-amber-800/90 mb-3 leading-relaxed">
+                      {kontaktData.bookingNotice.text}
+                    </p>
+
+                    {kontaktData.bookingNotice.email && (
+                      <div className="text-sm">
+                        <span className="text-amber-900 font-medium">Kontakta istället: </span>
+                        <a
+                          href={`mailto:${kontaktData.bookingNotice.email}`}
+                          className="font-bold text-amber-700 hover:text-amber-900 underline underline-offset-2"
+                        >
+                          {kontaktData.bookingNotice.email}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 

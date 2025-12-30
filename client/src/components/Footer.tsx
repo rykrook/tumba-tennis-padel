@@ -1,7 +1,7 @@
 import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react'
 import { client } from '../lib/sanity'
 import { useEffect, useState } from 'react'
-import logo from '../assets/tumbatk.png'
+import logo from '../assets/tumbatklogga.png'
 
 interface KontaktData {
   address: string;
