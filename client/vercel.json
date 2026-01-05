@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*).aspx",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/Arkiv/(.*)",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/Default.aspx",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
