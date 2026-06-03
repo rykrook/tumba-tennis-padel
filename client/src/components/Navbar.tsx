@@ -1,205 +1,223 @@
-
 import { Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  Users, Trophy, Calendar, Phone, MapPin,
-  Menu, X, ChevronDown, UserCog, ChevronRight,
-  Newspaper
+  Trophy, MapPin, Menu, X, ChevronDown, ChevronRight,
+  UserCog, Newspaper, Ticket,
 } from 'lucide-react'
 import logo from '../assets/tumbatklogga.png'
 
+const BOOK_URL = 'https://www.matchi.se/facilities/tumbatk'
+
+const primaryLinks = [
+  { to: '/tennis', label: 'Tennis' },
+  { to: '/padel', label: 'Padel' },
+  { to: '/träningsdagar', label: 'Träningsdagar' },
+  { to: '/kontakt', label: 'Kontakt' },
+]
+
+const moreLinks = [
+  { to: '/nyheter', label: 'Nyheter', Icon: Newspaper },
+  { to: '/hitta-hit', label: 'Hitta hit', Icon: MapPin },
+  { to: '/hall-of-fame', label: 'Hall of Fame', Icon: Trophy },
+  { to: '/tranare-styrelsen', label: 'Tränare & Styrelse', Icon: UserCog },
+]
+
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
 
-  const closeMobileMenu = () => setMobileOpen(false)
+  const isHome = location.pathname === '/'
+  const transparent = isHome && !scrolled && !mobileOpen
 
-  const transparentPages = ['/', '/tennis', '/padel']
-  const isTransparent = transparentPages.includes(location.pathname)
+  const isActive = (to: string) =>
+    location.pathname === to || location.pathname.startsWith(to + '/')
 
-  const defaultBgClass = "bg-primary text-white shadow-xl";
+  // Scroll-medveten bakgrund (transparent högst upp på startsidan)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-  let navBackgroundClass;
-  let iconColorClass;
+  // Stäng "Mer"-menyn vid klick utanför eller Esc
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && (setMoreOpen(false), setMobileOpen(false))
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [])
 
-  if (mobileOpen) {
-    navBackgroundClass = defaultBgClass;
-    iconColorClass = "text-white";
-  } else if (isTransparent) {
-    navBackgroundClass = "bg-transparent text-white";
-    iconColorClass = "text-white";
-  } else {
-    navBackgroundClass = defaultBgClass;
-    iconColorClass = "text-white";
+  // Lås bakgrundsscroll när mobilmenyn är öppen
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileOpen])
+
+  const closeAll = () => {
+    setMobileOpen(false)
+    setMoreOpen(false)
   }
 
-  return (
-    <nav className={`relative top-0 z-50 transition-all duration-300 ${navBackgroundClass}`}>
-      <div className="px-4 md:px-8 lg:px-12">
-        <div className="flex justify-between items-center h-20">
+  const navBg = transparent
+    ? 'bg-transparent'
+    : 'bg-white/95 backdrop-blur shadow-sm'
+  const linkColor = transparent ? 'text-white' : 'text-slate-700'
 
-          <Link to="/" className="flex items-center gap-4">
-            <img src={logo} alt="Tumba TK" className="h-16 w-16 md:h-20 md:w-20" />
-            <span className="hidden lg:block text-2xl font-bold">
+  const linkClass = (active: boolean) =>
+    `px-3 py-2 rounded-lg font-medium transition-colors ${
+      transparent
+        ? `${active ? 'text-white' : 'text-white/90'} hover:bg-white/15`
+        : `${active ? 'text-primary' : 'text-slate-700'} hover:bg-primary/5 hover:text-primary`
+    } ${active ? 'font-semibold' : ''}`
+
+  return (
+    <>
+    <nav className={`sticky top-0 z-50 transition-colors duration-300 ${navBg}`}>
+      <div className="container-page">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <Link to="/" onClick={closeAll} className="flex items-center gap-3">
+            <img src={logo} alt="Tumba TK" className="h-14 w-14 md:h-16 md:w-16" />
+            <span className={`hidden sm:block text-xl font-display font-bold ${linkColor}`}>
               Tumba Tennisklubb
             </span>
           </Link>
 
-          {/* 2. Desktop meny */}
-          <div className="hidden md:flex items-center space-x-8 text-xl font-medium">
-            <Link to="/" className="hover:bg-white/20 px-4 py-2 rounded transition">Hem</Link>
-            <Link to="/tennis" className="hover:bg-white/20 px-4 py-2 rounded transition">Tennis</Link>
-            <Link to="/padel" className="hover:bg-white/20 px-4 py-2 rounded transition">Padel</Link>
+          {/* Desktop-meny */}
+          <div className="hidden lg:flex items-center gap-1">
+            {primaryLinks.map((l) => (
+              <Link key={l.to} to={l.to} className={linkClass(isActive(l.to))}>
+                {l.label}
+              </Link>
+            ))}
 
-            <div className="relative">
-              <div
-                className="hover:bg-white/20 px-4 py-2 rounded flex items-center gap-2 transition cursor-pointer-events"
-                onMouseEnter={(e) => e.currentTarget.parentElement?.querySelector('.dropdown')?.classList.remove('hidden')}
+            {/* "Mer"-dropdown */}
+            <div className="relative" ref={moreRef}>
+              <button
+                onClick={() => setMoreOpen((v) => !v)}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
+                className={`${linkClass(false)} flex items-center gap-1`}
               >
-                <Users className="w-5 h-5" />
-                Klubben
-                <ChevronDown className="w-4 h-4" />
-              </div>
+                Mer
+                <ChevronDown className={`w-4 h-4 transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-              <div
-                className="dropdown hidden absolute top-full right-0 pt-5 w-80"
-                onMouseLeave={(e) => e.currentTarget.classList.add('hidden')}
-              >
-                <div className="h-5 -mt-5"></div>
-                <div className="bg-white text-gray-800 rounded-xl shadow-2xl border border-accent/20 overflow-hidden">
-                  <Link to="/nyheter" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <Newspaper className="w-5 h-5 text-primary" /> Nyheter
-                  </Link>
-                  <Link to="/kontakt" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <Phone className="w-5 h-5 text-primary" /> Kontakt
-                  </Link>
-                  <Link to="/hitta-hit" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <MapPin className="w-5 h-5 text-primary" /> Hitta hit
-                  </Link>
-                  <Link to="/hall-of-fame" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <Trophy className="w-5 h-5 text-accent" /> Hall of Fame
-                  </Link>
-                  <Link to="/tranare-styrelsen" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <UserCog className="w-5 h-5 text-primary" /> Tränare & Styrelse
-                  </Link>
-                  <Link to="/träningsdagar" onClick={closeMobileMenu} className="block px-6 py-4 hover:bg-gray-100 flex items-center gap-4">
-                    <Calendar className="w-5 h-5 text-primary" /> Träningsdagar
-                  </Link>
+              {moreOpen && (
+                <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden py-2">
+                  {moreLinks.map(({ to, label, Icon }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      onClick={closeAll}
+                      className={`flex items-center gap-3 px-5 py-3 text-slate-700 hover:bg-primary/5 hover:text-primary transition-colors ${
+                        isActive(to) ? 'text-primary font-semibold bg-primary/5' : ''
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 text-accent" />
+                      {label}
+                    </Link>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
+
+            {/* Boka bana */}
+            <a
+              href={BOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`ml-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold transition-colors ${
+                transparent
+                  ? 'bg-white text-primary hover:bg-accent'
+                  : 'bg-primary text-white hover:bg-secondary'
+              }`}
+            >
+              <Ticket className="w-4 h-4" />
+              Boka bana
+            </a>
           </div>
 
           {/* Mobil hamburgare */}
           <button
             onClick={() => setMobileOpen(true)}
-            className={`md:hidden p-2 transition-colors duration-300 ${iconColorClass}`}
+            aria-label="Öppna meny"
+            className={`lg:hidden p-2 ${linkColor}`}
           >
             <Menu className="w-8 h-8" />
           </button>
         </div>
       </div>
+    </nav>
 
-      {/* FULLSKÄRMSMOBILMENY */}
+      {/* Helskärms mobilmeny – ligger utanför <nav> så att backdrop-blur
+          inte skapar ett containing block för den fixerade overlayn */}
       {mobileOpen && (
-        <div className="fixed inset-0 bg-primary z-[99] flex flex-col justify-start md:hidden overflow-y-auto">
-
+        <div className="fixed inset-0 bg-primary z-[99] flex flex-col overflow-y-auto lg:hidden">
           <div className="flex justify-between items-center p-6 border-b border-white/10">
-            <img src={logo} alt="Tumba TK" className="h-20 w-auto" />
-
-            <button
-              onClick={closeMobileMenu}
-              className="p-2 text-white hover:text-accent transition-colors"
-            >
+            <img src={logo} alt="Tumba TK" className="h-16 w-16" />
+            <button onClick={closeAll} aria-label="Stäng meny" className="p-2 text-white hover:text-accent transition-colors">
               <X className="w-8 h-8" />
             </button>
           </div>
 
-          <div className="flex flex-col p-8 flex-grow">
+          <div className="flex flex-col p-8 gap-2">
+            <Link to="/" onClick={closeAll} className="text-3xl font-display font-bold text-white py-2 flex items-center justify-between hover:text-accent transition-colors">
+              Hem <ChevronRight className="w-7 h-7 text-accent/60" />
+            </Link>
+            {primaryLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={closeAll}
+                className="text-3xl font-display font-bold text-white py-2 flex items-center justify-between hover:text-accent transition-colors"
+              >
+                {l.label} <ChevronRight className="w-7 h-7 text-accent/60" />
+              </Link>
+            ))}
 
-            <div className="flex flex-col space-y-2 border-b border-white/10 pb-8 mb-8">
-              <Link
-                to="/"
-                onClick={closeMobileMenu}
-                className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
-              >
-                Hem
-                <ChevronRight className="w-8 h-8 text-accent/50 group-hover:text-accent transition-colors" />
-              </Link>
-              <Link
-                to="/tennis"
-                onClick={closeMobileMenu}
-                className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
-              >
-                Tennis
-                <ChevronRight className="w-8 h-8 text-accent/50 group-hover:text-accent transition-colors" />
-              </Link>
-              <Link
-                to="/padel"
-                onClick={closeMobileMenu}
-                className="text-4xl font-bold text-white hover:text-accent transition-colors py-2 flex items-center justify-between"
-              >
-                Padel
-                <ChevronRight className="w-8 h-8 text-accent/50 group-hover:text-accent transition-colors" />
-              </Link>
+            <a
+              href={BOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-accent mt-4 w-full"
+            >
+              <Ticket className="w-5 h-5" />
+              Boka bana på Matchi.se
+            </a>
+
+            <h4 className="text-sm font-semibold text-accent uppercase tracking-widest mt-8 mb-3">Klubben</h4>
+            <div className="flex flex-col gap-3">
+              {moreLinks.map(({ to, label, Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={closeAll}
+                  className="text-lg font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
+                >
+                  <Icon className="w-5 h-5 text-accent" /> {label}
+                </Link>
+              ))}
             </div>
-
-            <h4 className="text-sm font-semibold text-accent uppercase tracking-widest mb-4">Klubben</h4>
-
-            <div className="flex flex-col space-y-4">
-              <Link
-                to="/nyheter"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <ChevronRight className="w-5 h-5 text-accent" /> Nyheter
-              </Link>
-              <Link
-                to="/kontakt"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <ChevronRight className="w-5 h-5 text-accent" /> Kontakt
-              </Link>
-              <Link
-                to="/hitta-hit"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <ChevronRight className="w-5 h-5 text-accent" /> Hitta hit
-              </Link>
-              <Link
-                to="/hall-of-fame"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <Trophy className="w-5 h-5 text-accent" /> Hall of Fame
-              </Link>
-              <Link
-                to="/tranare-styrelsen"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <ChevronRight className="w-5 h-5 text-accent" /> Tränare & Styrelse
-              </Link>
-              <Link
-                to="/träningsdagar"
-                onClick={closeMobileMenu}
-                className="text-xl font-medium text-white/90 hover:text-accent transition-colors flex items-center gap-3"
-              >
-                <ChevronRight className="w-5 h-5 text-accent" /> Träningsdagar
-              </Link>
-            </div>
-
           </div>
 
-          <div className="p-8 border-t border-white/10">
-            <p className="text-sm text-white/50">© 2024 Tumba Tennisklubb. Alla rättigheter reserverade.</p>
+          <div className="mt-auto p-8 border-t border-white/10">
+            <p className="text-sm text-white/50">© {new Date().getFullYear()} Tumba Tennisklubb</p>
           </div>
         </div>
       )}
-    </nav>
-
-
+    </>
   )
 }

@@ -30,9 +30,7 @@ function App() {
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <KommunBanner />
-        <div className="relative z-40">
-          <Navbar />
-        </div>
+        <Navbar />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -48,8 +46,8 @@ function App() {
             <Route path="/nyheter/:slug" element={<NewsItem />} />
           </Routes>
         </main>
+        <Footer />
       </div>
-      <Footer />
       <Analytics />
     </Router>
   )

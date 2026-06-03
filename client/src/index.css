@@ -1,41 +1,67 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-slate-700 bg-white antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  html, body {
+    overscroll-behavior-y: none;
+  }
+}
+
 @layer components {
-  .bg-primary {
-    background-color: #183c86;
+  /* Layout helpers */
+  .container-page {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  .bg-secondary {
-    background-color: #0070ba;
+  .section {
+    @apply py-16 md:py-24;
   }
 
-  .bg-accent {
-    background-color: #ebb869;
+  /* Buttons — friendly, rounded */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-base font-semibold
+           transition-all duration-200 shadow-sm focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/25;
   }
 
-  .text-primary {
-    color: #183c86;
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-secondary hover:shadow-md;
   }
 
-  .text-accent {
-    color: #ebb869;
+  .btn-accent {
+    @apply btn bg-accent text-primary hover:bg-accent-dark hover:shadow-md;
   }
 
-  .hover\:bg-secondary:hover {
-    background-color: #0070ba;
+  .btn-outline {
+    @apply btn bg-transparent text-white border-2 border-white hover:bg-white hover:text-primary;
   }
 
-  .border-accent {
-    border-color: #ebb869;
+  /* Card */
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-soft transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-md hover:-translate-y-1;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
   }
 
   to {
@@ -45,16 +71,5 @@
 }
 
 .animate-fadeIn {
-  animation: fadeIn 1.2s ease-out forwards;
-}
-
-html,
-body {
-  overscroll-behavior-y: none;
-  
-}
-
-#__next {
-  min-height: 100vh;
-  background-color: #183c86;
+  animation: fadeIn 1s ease-out forwards;
 }

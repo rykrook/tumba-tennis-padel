@@ -1,4 +1,16 @@
-export default async function handler(req: any, res: any) {
+interface ApiRequest {
+    method?: string
+    body: Record<string, string | undefined>
+}
+
+interface ApiResponse {
+    setHeader(name: string, value: string): void
+    status(code: number): ApiResponse
+    json(body: unknown): ApiResponse
+    end(): ApiResponse
+}
+
+export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Allow-Methods', 'POST')

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 
 interface Props {
   data: {
@@ -11,43 +12,43 @@ interface Props {
 }
 
 export default function KeyServicesCTA({ data }: Props) {
+  const cards = [
+    {
+      to: '/tennis',
+      title: data.tennisTitle || 'Vår tennis',
+      text: data.tennisText || 'Läs allt om våra träningsgrupper och kurser för barn och vuxna.',
+      cta: 'Utforska tennis',
+    },
+    {
+      to: '/padel',
+      title: data.padelTitle || 'Vår padel',
+      text: data.padelText || 'Hitta tider och information om padel hos oss.',
+      cta: 'Utforska padel',
+    },
+  ]
+
   return (
-    <section className="py-20 bg-primary/95 text-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-10 md:mb-16">
+    <section className="section bg-primary text-white">
+      <div className="container-page text-center">
+        <h2 className="text-3xl md:text-4xl font-display font-bold mb-12">
           {data.title || 'Vad vill du spela idag?'}
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-          <Link
-            to="/tennis"
-            className="group flex flex-col items-center justify-center p-8 border-2 border-accent rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.02]"
-          >
-            <h3 className="text-2xl md:text-3xl font-extrabold mb-2 text-white">
-              {data.tennisTitle || 'VÅR TENNIS'}
-            </h3>
-            <p className="text-white/80 max-w-sm mb-6">
-              {data.tennisText || 'Läs allt om våra träningsgrupper och kurser.'}
-            </p>
-            <span className="text-accent font-semibold flex items-center gap-2 border-b-2 border-accent/50 group-hover:border-accent transition-colors">
-              Utforska Tennis
-            </span>
-          </Link>
-
-          <Link
-            to="/padel"
-            className="group flex flex-col items-center justify-center p-8 border-2 border-accent rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 transform hover:scale-[1.02]"
-          >
-            <h3 className="text-2xl md:text-3xl font-extrabold mb-2 text-white">
-              {data.padelTitle || 'VÅR PADEL'}
-            </h3>
-            <p className="text-white/80 max-w-sm mb-6">
-              {data.padelText || 'Hitta tider och information om padel hos oss.'}
-            </p>
-            <span className="text-accent font-semibold flex items-center gap-2 border-b-2 border-accent/50 group-hover:border-accent transition-colors">
-              Utforska Padel
-            </span>
-          </Link>
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+          {cards.map((c) => (
+            <Link
+              key={c.to}
+              to={c.to}
+              className="group flex flex-col items-center text-center p-8 rounded-2xl bg-white/5 border border-white/15 hover:bg-white/10 hover:border-accent/50 transition-all duration-300"
+            >
+              <h3 className="text-2xl font-display font-bold mb-2">{c.title}</h3>
+              <p className="text-white/75 max-w-sm mb-6">{c.text}</p>
+              <span className="inline-flex items-center gap-2 font-semibold text-accent group-hover:gap-3 transition-all">
+                {c.cta}
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

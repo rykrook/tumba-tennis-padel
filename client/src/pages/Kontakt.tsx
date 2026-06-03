@@ -2,219 +2,123 @@ import { useEffect, useState } from 'react'
 import { Mail, Phone, MapPin, Info } from 'lucide-react'
 import { client } from '../lib/sanity'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
-
-import emailjs from '@emailjs/browser'
+import PageHeader from '../components/PageHeader'
+import SignupForm from '../components/SignupForm'
+import Spinner from '../components/Spinner'
+import type { RichText } from '../lib/types'
 
 interface BookingNotice {
-  title: string;
-  text: string;
-  email?: string;
+  title: string
+  text: string
+  email?: string
 }
 
 interface KontaktData {
-  address: string;
-  phone: string;
-  email: string;
-  content: any[];
-  bookingNotice?: BookingNotice;
+  address: string
+  phone: string
+  email: string
+  content: RichText
+  bookingNotice?: BookingNotice
 }
-
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  honeypot: string;
-}
-
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID as string
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string
 
 const portableTextComponents: PortableTextComponents = {
   block: {
-    normal: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
-    h2: ({ children }) => <h2 className="text-2xl font-bold text-primary mb-3 mt-6">{children}</h2>,
+    normal: ({ children }) => <p className="text-slate-700 leading-relaxed mb-4">{children}</p>,
+    h2: ({ children }) => <h2 className="text-2xl font-display font-bold text-primary mb-3 mt-6">{children}</h2>,
   },
   list: {
-    bullet: ({ children }) => <ul className="list-disc list-inside space-y-1 pl-4 text-gray-700">{children}</ul>,
-  }
+    bullet: ({ children }) => <ul className="list-disc list-inside space-y-1 pl-4 text-slate-700">{children}</ul>,
+  },
 }
 
-
 export default function Kontakt() {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-    honeypot: '',
-  })
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [kontaktData, setKontaktData] = useState<KontaktData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const query = `*[_type == "kontakt"][0]{
-        address,
-        phone,
-        email,
-        content,
-        bookingNotice {
-          title,
-          text,
-          email
-        }
-      }`
-
-    client.fetch(query).then((data) => {
-      setKontaktData(data)
-      setIsLoading(false)
-    }).catch((err) => {
-      console.error("Kunde inte hämta kontaktdata: ", err)
-      setIsLoading(false)
-    })
+    client
+      .fetch(`*[_type == "kontakt"][0]{
+        address, phone, email, content,
+        bookingNotice { title, text, email }
+      }`)
+      .then((data) => {
+        setKontaktData(data)
+        setIsLoading(false)
+      })
+      .catch((err) => {
+        console.error('Kunde inte hämta kontaktdata: ', err)
+        setIsLoading(false)
+      })
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (formData.honeypot) return // HONEYPOT KONTROLL
-
-    // Validering av nycklar
-    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      console.error("EmailJS-nycklar saknas i miljövariablerna!")
-      setStatus('error')
-      return
-    }
-
-    setStatus('sending')
-
-    const templateParams = {
-      user_name: formData.name,
-      user_email: formData.email,
-      user_phone: formData.phone || 'Inget telefonnummer',
-      user_message: formData.message,
-      aktivitet: 'Kontakt',
-      subject_line: `Ny kontaktförfrågan: ${formData.name}`,
-    };
-
-
-    try {
-      // Skicka mail direkt via EmailJS
-      const res = await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        templateParams,
-        { publicKey: PUBLIC_KEY } // Autentiseras med Public Key
-      )
-
-      if (res.status === 200) {
-        console.log('Mail skickat framgångsrikt!', res.text);
-        setStatus('success')
-        // Rensa formuläret
-        setFormData({ name: '', email: '', phone: '', message: '', honeypot: '' })
-      } else {
-        console.error('EmailJS svarade med felkod:', res.status, res.text)
-        setStatus('error')
-      }
-    } catch (error) {
-      console.error('EmailJS fel (Client-side):', error)
-      setStatus('error')
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
-        <p className="text-xl text-primary">Laddar kontaktinformation...</p>
-      </div>
-    )
-  }
-
+  if (isLoading) return <Spinner label="Laddar kontaktinformation…" />
 
   return (
-    <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h1 className="text-5xl md:text-6xl font-black text-primary text-center mb-6">
-          Kontakta oss
-        </h1>
+    <div className="bg-surface min-h-screen">
+      <PageHeader
+        title="Kontakta oss"
+        intro="Har du frågor om kurser, träningsdagar eller annat? Hör av dig så återkommer vi så snart vi kan."
+      />
 
-        <p className="text-xl text-gray-700 text-center max-w-3xl mx-auto mb-12">
-          Har du frågor om kurser, träningsdagar eller annat? Fyll i formuläret så återkommer vi så snart som möjligt.
-        </p>
+      <div className="container-page max-w-6xl py-12 md:py-16">
+        <div className="grid md:grid-cols-2 gap-10 lg:gap-12">
+          {/* Klubbinfo */}
+          <div className="space-y-7">
+            <h2 className="text-2xl font-display font-bold text-primary border-b border-accent/50 pb-3">Klubbinfo</h2>
 
-        <div className="grid md:grid-cols-2 gap-12">
-
-          <div className="space-y-8 p-8 md:p-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b border-accent/50 pb-3">Klubbinfo</h2>
-
-            {/* E-POST */}
             {kontaktData?.email && (
-              <div className="flex items-start space-x-4">
+              <div className="flex items-start gap-4">
                 <Mail className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-semibold text-primary">E-post</h3>
-                  <a href={`mailto:${kontaktData.email}`} className="text-gray-700 hover:text-accent transition">
+                  <h3 className="font-semibold text-primary">E-post</h3>
+                  <a href={`mailto:${kontaktData.email}`} className="text-slate-700 hover:text-accent transition">
                     {kontaktData.email}
                   </a>
                 </div>
               </div>
             )}
 
-            {/* TELEFON */}
             {kontaktData?.phone && (
-              <div className="flex items-start space-x-4">
+              <div className="flex items-start gap-4">
                 <Phone className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-semibold text-primary">Telefon</h3>
-                  <a href={`tel:${kontaktData.phone.replace(/\s/g, '')}`} className="text-gray-700 hover:text-accent transition">
+                  <h3 className="font-semibold text-primary">Telefon</h3>
+                  <a href={`tel:${kontaktData.phone.replace(/\s/g, '')}`} className="text-slate-700 hover:text-accent transition">
                     {kontaktData.phone}
                   </a>
                 </div>
               </div>
             )}
 
-            {/* ADRESS */}
             {kontaktData?.address && (
-              <div className="flex items-start space-x-4">
+              <div className="flex items-start gap-4">
                 <MapPin className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-semibold text-primary">Adress</h3>
-                  <p className="text-gray-700 whitespace-pre-line">
-                    {kontaktData.address}
-                  </p>
+                  <h3 className="font-semibold text-primary">Adress</h3>
+                  <p className="text-slate-700 whitespace-pre-line">{kontaktData.address}</p>
                 </div>
               </div>
             )}
 
             {kontaktData?.content && kontaktData.content.length > 0 && (
-              <div className="pt-8 border-t border-gray-200">
+              <div className="pt-6 border-t border-slate-200">
                 <PortableText value={kontaktData.content} components={portableTextComponents} />
               </div>
             )}
 
             {kontaktData?.bookingNotice?.title && (
-              <div className="mb-8 bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-lg shadow-sm">
+              <div className="bg-cream border-l-4 border-accent p-5 rounded-r-xl shadow-sm">
                 <div className="flex items-start gap-4">
-                  <Info className="w-6 h-6 text-amber-600 mt-1 shrink-0" />
+                  <Info className="w-6 h-6 text-accent-dark mt-1 shrink-0" />
                   <div>
-                    <h3 className="text-base font-bold text-amber-900 mb-1">
-                      {kontaktData.bookingNotice.title}
-                    </h3>
-                    <p className="text-sm text-amber-800/90 mb-3 leading-relaxed">
-                      {kontaktData.bookingNotice.text}
-                    </p>
-
+                    <h3 className="font-bold text-primary mb-1">{kontaktData.bookingNotice.title}</h3>
+                    <p className="text-sm text-slate-700 mb-3 leading-relaxed">{kontaktData.bookingNotice.text}</p>
                     {kontaktData.bookingNotice.email && (
                       <div className="text-sm">
-                        <span className="text-amber-900 font-medium">Kontakta istället: </span>
+                        <span className="text-slate-700 font-medium">Kontakta istället: </span>
                         <a
                           href={`mailto:${kontaktData.bookingNotice.email}`}
-                          className="font-bold text-amber-700 hover:text-amber-900 underline underline-offset-2"
+                          className="font-bold text-accent-dark hover:text-primary underline underline-offset-2"
                         >
                           {kontaktData.bookingNotice.email}
                         </a>
@@ -224,81 +128,12 @@ export default function Kontakt() {
                 </div>
               </div>
             )}
-
           </div>
 
-          {/* 2. KONTAKTFORMULÄR */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-t-4 border-accent">
-            {status === 'success' ? (
-              <div className="text-center py-12">
-                <h2 className="text-3xl font-bold text-green-600 mb-4">
-                  Tack för ditt meddelande!
-                </h2>
-                <p className="text-lg">Vi hör av oss snart</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <h3 className="text-2xl font-bold text-primary mb-6">Skicka ett meddelande</h3>
-
-                {/* HONEYPOT */}
-                <input type="text" name="honeypot" value={formData.honeypot} onChange={handleChange} className="hidden" />
-
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Namn *"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-5 py-2 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none text-base transition duration-200"
-                />
-
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="E-post *"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-5 py-2 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none text-base transition duration-200"
-                />
-
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Telefon (valfritt)"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-5 py-2 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none text-base transition duration-200"
-                />
-
-                <textarea
-                  name="message"
-                  placeholder="Meddelande *"
-                  required
-                  rows={3}
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-5 py-2 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none text-base resize-none transition duration-200"
-                />
-
-                <div className="text-center pt-4">
-                  <button
-                    type="submit"
-                    disabled={status === 'sending'}
-                    className="inline-flex items-center justify-center gap-2 px-10 py-2 bg-primary text-white text-sm font-medium hover:bg-secondary transition-colors shadow-sm uppercase tracking-wider"
-                  >
-                    {status === 'sending' ? 'Skickar...' : 'Skicka meddelande'}
-                  </button>
-                </div>
-
-                {status === 'error' && (
-                  <p className="text-center text-red-600 font-medium pt-2">
-                    Något gick fel – prova igen!
-                  </p>
-                )}
-              </form>
-            )}
+          {/* Kontaktformulär */}
+          <div className="card border-t-4 border-t-accent p-6 md:p-10">
+            <h3 className="text-2xl font-display font-bold text-primary mb-6">Skicka ett meddelande</h3>
+            <SignupForm activity="Kontakt" messageRequired />
           </div>
         </div>
       </div>

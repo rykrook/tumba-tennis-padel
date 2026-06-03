@@ -9,8 +9,15 @@ interface KontaktData {
   email: string;
 }
 
+interface FooterSettings {
+  instagram?: string;
+  facebook?: string;
+  currentTermin?: string;
+  holidayNote?: string;
+}
+
 export default function Footer() {
-  const [settings, setSettings] = useState<any>(null)
+  const [settings, setSettings] = useState<FooterSettings | null>(null)
   const [kontaktData, setKontaktData] = useState<KontaktData | null>(null)
 
   useEffect(() => {
@@ -20,10 +27,10 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="bg-primary text-white py-12 mt-16">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-primary-dark text-white py-12">
+      <div className="container-page">
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 border-b border-white/20 pb-10 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 border-b border-white/15 pb-10 mb-8">
 
           {/* 1. KLUBBINFO & TERMIN (Vänster) */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
@@ -32,7 +39,7 @@ export default function Footer() {
               alt="Tumba Tennisklubb Logotyp"
               className="h-16 w-16 mb-4"
             />
-            <p className="text-xl font-bold tracking-wider mb-2">Tumba TK</p>
+            <p className="text-xl font-display font-bold tracking-wide mb-2">Tumba TK</p>
 
             {(settings?.currentTermin || settings?.holidayNote) && (
               <div className="mt-4 text-sm">
@@ -48,7 +55,7 @@ export default function Footer() {
 
           {/* 2. KONTAKTA OSS (Mitten) */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="text-xl font-bold mb-4 border-b-2 border-accent pb-1">Kontakta oss</h3>
+            <h3 className="text-xl font-display font-bold mb-4 border-b-2 border-accent pb-1">Kontakta oss</h3>
 
             <ul className="space-y-3">
               {kontaktData?.address && (
@@ -78,17 +85,17 @@ export default function Footer() {
 
           {/* 3. FÖLJ OSS / SOCIALA MEDIER (Höger) */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h3 className="text-xl font-bold mb-4 border-b-2 border-accent pb-1">Följ oss</h3>
+            <h3 className="text-xl font-display font-bold mb-4 border-b-2 border-accent pb-1">Följ oss</h3>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex gap-4">
               {settings?.instagram && (
-                <a href={settings.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-accent transition">
-                  <Instagram className="w-8 h-8" />
+                <a href={settings.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex items-center justify-center h-11 w-11 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors">
+                  <Instagram className="w-6 h-6" />
                 </a>
               )}
               {settings?.facebook && (
-                <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-accent transition">
-                  <Facebook className="w-8 h-8" />
+                <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex items-center justify-center h-11 w-11 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors">
+                  <Facebook className="w-6 h-6" />
                 </a>
               )}
             </div>

@@ -13,6 +13,17 @@
           name: 'member',
           fields: [
             { name: 'name', title: 'Namn', type: 'string' },
+            {
+              name: 'slug',
+              title: 'Slug (länk)',
+              type: 'slug',
+              description: 'Klicka på "Generate" för att skapa en länk utifrån namnet. Krävs för att personen ska kunna öppnas på egen sida.',
+              options: {
+                // Källan måste vara en funktion eftersom fältet ligger i en array
+                source: (_doc: unknown, options: { parent?: { name?: string } }) => options.parent?.name || '',
+                maxLength: 96,
+              },
+            },
             { name: 'year', title: 'Invald år', type: 'string' },
             { name: 'image', title: 'Bild', type: 'image', options: { hotspot: true } },
             {

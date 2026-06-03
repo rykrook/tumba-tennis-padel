@@ -1,104 +1,145 @@
 import { useEffect, useState } from 'react'
-import { client, urlFor } from '../lib/sanity'
-import { PortableText } from '@portabletext/react'
+import { client } from '../lib/sanity'
+import { PortableText, type PortableTextComponents } from '@portabletext/react'
+import { Link } from 'react-router-dom'
+import { GraduationCap, CalendarDays, MapPin, ArrowRight } from 'lucide-react'
 import NewsSection from '../components/NewsSection'
 import BookCourtCTA from '../components/BookCourtCTA'
 import HallOfFameCard from '../components/HallOfFameCard'
 import KeyServicesCTA from '../components/KeyServicesCTA'
 import BookCourtHeroButton from '../components/BookCourtHeroButton'
-import { Link } from 'react-router-dom'
+import PageHero from '../components/PageHero'
+import type { BookCourt, RichText, SanityImage } from '../lib/types'
 
-const portableTextComponents = {
+interface HomeDoc {
+  heroImage?: SanityImage
+  welcome?: RichText
+  videoUrl?: string
+}
+
+interface NewsCard {
+  _id: string
+  title: string
+  slug?: string
+  publishedAt?: string
+  excerpt?: string
+  image?: SanityImage
+}
+
+interface HofMember {
+  name: string
+  year: string
+  imageUrl?: string
+  slug?: string
+}
+
+interface HomeSettings {
+  keyServices?: Record<string, string>
+  bookCourt?: BookCourt
+  heroButton?: { buttonText?: string; url?: string }
+}
+
+const portableTextComponents: PortableTextComponents = {
   block: {
-    h1: (props: any) => (
-      <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 md:mb-8 
-                     leading-tight tracking-tighter drop-shadow-2xl">
-        {props.children}
+    h1: ({ children }) => (
+      <h1 className="font-display font-extrabold text-white text-4xl md:text-6xl lg:text-7xl leading-tight tracking-tight drop-shadow-lg">
+        {children}
       </h1>
     ),
-    h2: (props: any) => (
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 md:mb-8 
-                     leading-snug drop-shadow-xl">
-        {props.children}
+    h2: ({ children }) => (
+      <h2 className="font-display font-bold text-white text-3xl md:text-4xl leading-snug drop-shadow-lg">
+        {children}
       </h2>
     ),
-    normal: (props: any) => (
-      <p className="text-xl md:text-2xl text-white font-medium drop-shadow-xl max-w-3xl mx-auto">
-        {props.children}
+    normal: ({ children }) => (
+      <p className="text-lg md:text-2xl text-white/90 font-medium drop-shadow max-w-2xl mx-auto mt-5">
+        {children}
       </p>
     ),
   },
 }
 
+const quickPaths = [
+  {
+    to: '/tennis',
+    Icon: GraduationCap,
+    title: 'Tennis & kurser',
+    text: 'Träningsgrupper och kurser för barn och vuxna – och hur du anmäler dig.',
+  },
+  {
+    to: '/träningsdagar',
+    Icon: CalendarDays,
+    title: 'Träningsdagar',
+    text: 'Se schemat för terminens träningsdagar, månad för månad.',
+  },
+  {
+    to: '/kontakt',
+    Icon: MapPin,
+    title: 'Kontakt',
+    text: 'Har du frågor om kurser eller annat? Vi hjälper dig gärna.',
+  },
+]
+
 export default function Home() {
-  const [home, setHome] = useState<any>(null)
-  const [news, setNews] = useState<any[]>([])
-  const [hallOfFame, setHallOfFame] = useState<any[]>([])
-  const [siteSettings, setSiteSettings] = useState<any>(null)
+  const [home, setHome] = useState<HomeDoc | null>(null)
+  const [news, setNews] = useState<NewsCard[]>([])
+  const [hallOfFame, setHallOfFame] = useState<HofMember[]>([])
+  const [siteSettings, setSiteSettings] = useState<HomeSettings | null>(null)
 
   useEffect(() => {
     Promise.all([
-      // 1. Homepage
       client.fetch(`*[_type == "homepage"][0]{
-      heroImage,
-      welcome,
-      "videoUrl": backgroundVideo.asset->url
-    }`),
-
-      // 2. Nyheter
+        heroImage,
+        welcome,
+        "videoUrl": backgroundVideo.asset->url
+      }`),
       client.fetch(`*[_type == "news"] | order(publishedAt desc)[0...3]{
-      _id,
-      title,
-      publishedAt,
-      excerpt,
-      image,
-      "slug": slug.current
-    }`),
-      // 3. Hall Of Fame
+        _id, title, publishedAt, excerpt, image, "slug": slug.current
+      }`),
       client.fetch(`*[_type == "hallOfFame"][0].members[]{
-      name,
-      year,
-      image,
-      "imageUrl": image.asset->url,
-      "slug": slug.current,
-      description
-    }`),
-      // 4. Komponenter
-      client.fetch(`*[_type == "siteSettings"][0]{
-      keyServices,
-      bookCourt
-    }`),
-      client.fetch(`*[_type == "siteSettings"][0]{
-      heroButton
-    }`)
-    ]).then(([homeData, newsData, hofData, settings, heroButtonData]) => {
+        name, year, "imageUrl": image.asset->url, "slug": slug.current
+      }`),
+      client.fetch(`*[_type == "siteSettings"][0]{ keyServices, bookCourt, heroButton }`),
+    ]).then(([homeData, newsData, hofData, settings]) => {
       setHome(homeData)
       setNews(newsData || [])
       setHallOfFame(hofData || [])
-      setSiteSettings({ ...(settings || {}), ...(heroButtonData || {}) })
+      setSiteSettings(settings || {})
     })
   }, [])
 
   return (
     <>
       {/* HERO */}
-      <section className="relative h-[90vh] md:h-[90vh] mt-[-5rem] pt-20 flex items-center justify-center overflow-hidden">
-        {home?.videoUrl ? (
-          <video autoPlay muted loop playsInline className="absolute top-0 left-0 -z-30 w-full h-full object-cover">
-            <source src={home.videoUrl} type="video/mp4" />
-          </video>
-        ) : home?.heroImage ? (
-          <img src={urlFor(home.heroImage).width(1920).url()} alt="Välkommen" className="absolute top-0 left-0 w-full h-full object-cover" />
-        ) : null}
-
-        <div className="absolute inset-0 bg-black/60" />
-
-        <div className="relative z-10 text-center px-6 max-w-6xl">
-          <div className="animate-fadeIn">
-            <PortableText value={home?.welcome || []} components={portableTextComponents} />
-          </div>
-          <div className="mt-12">
+      <PageHero videoUrl={home?.videoUrl} image={home?.heroImage} height="full" overlapNav>
+        <div className="text-center">
+          <PortableText value={home?.welcome || []} components={portableTextComponents} />
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <Link to="/tennis" className="btn-accent">
+              Tennis &amp; kurser
+              <ArrowRight className="w-4 h-4" />
+            </Link>
             <BookCourtHeroButton data={siteSettings?.heroButton || {}} />
+          </div>
+        </div>
+      </PageHero>
+
+      {/* QUICK PATHS – det föräldrar oftast letar efter */}
+      <section className="section bg-surface">
+        <div className="container-page">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {quickPaths.map(({ to, Icon, title, text }) => (
+              <Link key={to} to={to} className="card-hover group p-8 flex flex-col">
+                <div className="flex items-center justify-center h-14 w-14 rounded-2xl bg-primary/10 text-primary mb-5">
+                  <Icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-xl font-display font-bold text-primary mb-2">{title}</h3>
+                <p className="text-slate-600 leading-relaxed flex-grow">{text}</p>
+                <span className="mt-5 inline-flex items-center gap-2 font-semibold text-accent-dark group-hover:gap-3 transition-all">
+                  Läs mer <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -108,60 +149,46 @@ export default function Home() {
       <BookCourtCTA data={siteSettings?.bookCourt || {}} />
 
       {/* Hall of Fame */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-accent mb-12 text-center">
+      <section className="section bg-surface">
+        <div className="container-page">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-primary mb-12 text-center">
             Hall of Fame
           </h2>
 
           {hallOfFame && hallOfFame.length > 0 ? (
             <>
-              {/* grid visar max 4 personer */}
-              <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
-                {hallOfFame.slice(0, 4).map((member: any, i: number) => (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12">
+                {hallOfFame.slice(0, 4).map((member, i) =>
                   member.slug ? (
-                    <Link
-                      key={i}
-                      to={`/hall-of-fame/${member.slug}`}
-                      className="block h-full transition-transform hover:-translate-y-2"
-                    >
+                    <Link key={i} to={`/hall-of-fame/${member.slug}`} className="block h-full transition-transform hover:-translate-y-1">
                       <HallOfFameCard member={member} />
                     </Link>
                   ) : (
-                    // Om slug saknas (fallback)
                     <div key={i}>
                       <HallOfFameCard member={member} />
                     </div>
                   )
-                ))}
+                )}
               </div>
 
-              {/* KNAPP FÖR ATT SE ALLA */}
               <div className="text-center">
-                <Link
-                  to="/hall-of-fame"
-                  className="inline-block px-8 py-3 text-lg font-semibold text-white bg-accent hover:bg-accent-dark rounded-md transition duration-300 shadow-md hover:shadow-lg"
-                >
+                <Link to="/hall-of-fame" className="btn-primary">
                   Visa hela Hall of Fame
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </>
           ) : (
-            // OM LISTAN ÄR TOM
-            <div className="text-center p-10 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
-              <p className="text-xl text-gray-700 mb-6">
-                Vi har för närvarande inga utsedda medlemmar i vår Hall of Fame.
-                Håll utkik! Nya framstående individer kommer att läggas till i framtiden.
+            <div className="card text-center p-10 max-w-2xl mx-auto">
+              <p className="text-lg text-slate-600 mb-6">
+                Vi har för närvarande inga utsedda medlemmar i vår Hall of Fame. Håll utkik – nya
+                framstående individer läggs till framöver!
               </p>
-              <Link
-                to="/hall-of-fame"
-                className="inline-block px-8 py-3 text-lg font-semibold text-white bg-accent hover:bg-accent-dark rounded-md transition duration-300"
-              >
+              <Link to="/hall-of-fame" className="btn-primary">
                 Läs mer om Hall of Fame
               </Link>
             </div>
           )}
-
         </div>
       </section>
     </>

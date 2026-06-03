@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { client } from '../lib/sanity'
 import { MapPin, Train, ParkingCircle } from 'lucide-react'
+import PageHeader from '../components/PageHeader'
+import Spinner from '../components/Spinner'
 
 interface HittaHitData {
-  address?: string;
-  mapEmbed?: string;
+  address?: string
+  mapEmbed?: string
 }
 
 export default function HittaHit() {
@@ -12,7 +14,8 @@ export default function HittaHit() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    client.fetch(`*[_type == "hittaHit"][0]{address, mapEmbed}`)
+    client
+      .fetch(`*[_type == "hittaHit"][0]{address, mapEmbed}`)
       .then((result) => {
         setData(result)
         setIsLoading(false)
@@ -20,76 +23,60 @@ export default function HittaHit() {
       .catch(() => setIsLoading(false))
   }, [])
 
-  if (isLoading) {
-    return (
-      <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen flex items-center justify-center">
-        <p className="text-xl text-primary">Laddar karta...</p>
-      </div>
-    )
-  }
+  if (isLoading) return <Spinner label="Laddar karta…" />
 
-  const address = data?.address || "Adress saknas";
-  const mapEmbed = data?.mapEmbed || '';
+  const address = data?.address || 'Adress saknas'
+  const mapEmbed = data?.mapEmbed || ''
 
   return (
-    <div className="bg-gray-50 pt-20 mt-[-5rem] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="bg-surface min-h-screen">
+      <PageHeader title="Hitta hit" Icon={MapPin} />
 
-        {/* SIDTITIEL */}
-        <h1 className="text-5xl md:text-6xl font-black text-primary text-center mb-12">
-          <MapPin className="w-12 h-12 inline-block mr-4 text-accent" /> Hitta hit
-        </h1>
-
-        {/* CONTAINER FÖR KARTA OCH INFO */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
-          {/* KARTA */}
-          <div className="lg:col-span-2 w-full overflow-hidden shadow-2xl border-b-4 border-primary">
+      <div className="container-page py-12 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Karta */}
+          <div className="lg:col-span-2 w-full overflow-hidden rounded-2xl shadow-soft">
             {mapEmbed ? (
               <div
                 dangerouslySetInnerHTML={{ __html: mapEmbed }}
-                className="w-full h-96 md:h-[500px] lg:h-full min-h-96"
+                className="w-full h-96 md:h-[500px] lg:h-full min-h-96 [&>iframe]:w-full [&>iframe]:h-full"
               />
             ) : (
-              <div className="w-full h-96 md:h-[500px] lg:h-full min-h-96 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-lg">Kartinbäddning saknas i Sanity.</span>
+              <div className="w-full h-96 md:h-[500px] lg:h-full min-h-96 bg-slate-200 flex items-center justify-center">
+                <span className="text-slate-500 text-lg">Kartinbäddning saknas.</span>
               </div>
             )}
           </div>
 
-
-          {/* INFORMATION */}
-          <div className="flex flex-col justify-start space-y-8 p-6 bg-white shadow-lg border-l-4 border-accent h-full">
-
-            {/* ADRESS */}
+          {/* Information */}
+          <div className="card border-l-4 border-l-accent p-6 md:p-8 space-y-8">
             <div>
-              <h2 className="text-2xl font-black text-primary mb-3">Välkommen!</h2>
-              <div className="flex items-center gap-3 text-lg font-bold text-gray-800">
+              <h2 className="text-2xl font-display font-bold text-primary mb-3">Välkommen!</h2>
+              <div className="flex items-center gap-3 text-lg font-semibold text-slate-800">
                 <MapPin className="w-6 h-6 text-accent flex-shrink-0" />
                 <p className="whitespace-pre-line">{address}</p>
               </div>
             </div>
 
-            {/* BIL & PARKERING */}
             <div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3 border-b border-gray-100 pb-1">Bil & Parkering</h3>
-
-              <div className="flex items-start gap-3 text-base leading-relaxed text-gray-700">
+              <h3 className="text-lg font-display font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">
+                Bil &amp; parkering
+              </h3>
+              <div className="flex items-start gap-3 text-slate-700 leading-relaxed">
                 <ParkingCircle className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                <p>
-                  Hallen ligger centralt i Tumba. Det finns gott om parkeringsmöjligheter i anslutning till byggnaden.
-                </p>
+                <p>Hallen ligger centralt i Tumba. Det finns gott om parkeringsmöjligheter i anslutning till byggnaden.</p>
               </div>
             </div>
 
-            {/* KOLLEKTIVTRAFIK */}
             <div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3 border-b border-gray-100 pb-1">Kollektivtrafik</h3>
-
-              <div className="flex items-start gap-3 text-base leading-relaxed text-gray-700">
+              <h3 className="text-lg font-display font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">
+                Kollektivtrafik
+              </h3>
+              <div className="flex items-start gap-3 text-slate-700 leading-relaxed">
                 <Train className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
                 <p>
-                  Ta Pendeltåget till **Tumba Station**. Från stationen är det cirka 5 minuters promenad till hallen.
+                  Ta pendeltåget till <strong className="font-semibold text-slate-900">Tumba station</strong>. Därifrån är
+                  det cirka 5 minuters promenad till hallen.
                 </p>
               </div>
             </div>
