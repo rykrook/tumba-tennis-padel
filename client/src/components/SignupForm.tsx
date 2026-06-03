@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { User, Mail, Phone, MessageSquare, Send } from 'lucide-react'
 import { sendSignup } from '../lib/email'
 
 interface SignupFormProps {
@@ -15,8 +16,10 @@ interface SignupFormProps {
 }
 
 const inputClass =
-  'w-full px-5 py-3 border border-slate-300 rounded-xl bg-white placeholder-slate-400 ' +
-  'transition duration-200 focus:border-primary focus:ring-4 focus:ring-primary/20 focus:outline-none text-base'
+  'w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50/70 placeholder-slate-400 text-base ' +
+  'transition duration-200 focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/15 focus:outline-none'
+
+const iconClass = 'pointer-events-none absolute left-4 w-5 h-5 text-slate-400'
 
 export default function SignupForm({
   activity,
@@ -26,6 +29,7 @@ export default function SignupForm({
   messageRequired = false,
 }: SignupFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const isContact = activity === 'Kontakt'
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -57,10 +61,12 @@ export default function SignupForm({
   }
 
   if (status === 'success') {
-    const isContact = activity === 'Kontakt'
     return (
       <div className="text-center bg-green-50 border border-green-200 text-green-800 rounded-2xl py-12 px-6">
-        <p className="text-2xl font-bold mb-1">
+        <div className="mx-auto mb-4 flex items-center justify-center h-14 w-14 rounded-full bg-green-100">
+          <Send className="w-6 h-6 text-green-600" />
+        </div>
+        <p className="text-2xl font-display font-bold mb-1">
           {isContact ? 'Tack för ditt meddelande!' : 'Tack för din anmälan!'}
         </p>
         <p className="text-green-700">Vi hör av oss så snart vi kan.</p>
@@ -82,35 +88,55 @@ export default function SignupForm({
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Honeypot (dolt för människor) */}
-        <input
-          type="text"
-          name="honeypot"
-          tabIndex={-1}
-          autoComplete="off"
-          className="hidden"
-          aria-hidden="true"
-        />
+        <input type="text" name="honeypot" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <input type="text" name="name" placeholder="Namn *" required className={inputClass} />
-          <input type="email" name="email" placeholder="E-post *" required className={inputClass} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="relative flex items-center">
+            <User className={iconClass} />
+            <input type="text" name="name" placeholder="Namn *" required className={inputClass} />
+          </div>
+          <div className="relative flex items-center">
+            <Mail className={iconClass} />
+            <input type="email" name="email" placeholder="E-post *" required className={inputClass} />
+          </div>
         </div>
-        <input type="tel" name="phone" placeholder="Telefon (valfritt)" className={inputClass} />
-        <textarea
-          name="message"
-          placeholder={messageRequired ? 'Meddelande *' : 'Meddelande / önskemål (valfritt)'}
-          required={messageRequired}
-          rows={4}
-          className={`${inputClass} resize-none`}
-        />
 
-        <div className="text-center pt-2">
-          <button type="submit" disabled={status === 'sending'} className="btn-primary disabled:opacity-60">
-            {status === 'sending' ? 'Skickar…' : 'Skicka anmälan'}
-          </button>
+        <div className="relative flex items-center">
+          <Phone className={iconClass} />
+          <input type="tel" name="phone" placeholder="Telefon (valfritt)" className={inputClass} />
         </div>
+
+        <div className="relative">
+          <MessageSquare className={`${iconClass} top-4`} />
+          <textarea
+            name="message"
+            placeholder={messageRequired ? 'Meddelande *' : 'Meddelande / önskemål (valfritt)'}
+            required={messageRequired}
+            rows={5}
+            className={`${inputClass} resize-none`}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={status === 'sending'}
+          className="group w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl
+                     bg-gradient-to-r from-primary to-secondary text-white font-semibold text-base
+                     shadow-lg shadow-primary/25 transition-all duration-200
+                     hover:shadow-xl hover:-translate-y-0.5
+                     disabled:opacity-60 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+        >
+          {status === 'sending' ? (
+            'Skickar…'
+          ) : (
+            <>
+              {isContact ? 'Skicka meddelande' : 'Skicka anmälan'}
+              <Send className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            </>
+          )}
+        </button>
 
         {status === 'error' && (
           <p className="text-center text-red-600 font-medium">

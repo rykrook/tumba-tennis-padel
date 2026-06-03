@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Mail, Phone, MapPin, Info } from 'lucide-react'
+import { Mail, Phone, MapPin, Info, Send } from 'lucide-react'
 import { client } from '../lib/sanity'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import PageHeader from '../components/PageHeader'
@@ -131,9 +131,24 @@ export default function Kontakt() {
           </div>
 
           {/* Kontaktformulär */}
-          <div className="card border-t-4 border-t-accent p-6 md:p-10">
-            <h3 className="text-2xl font-display font-bold text-primary mb-6">Skicka ett meddelande</h3>
-            <SignupForm activity="Kontakt" messageRequired />
+          <div className="rounded-3xl overflow-hidden bg-white shadow-xl shadow-primary/10 border border-slate-100">
+            <div className="relative overflow-hidden bg-gradient-to-br from-primary to-secondary px-6 md:px-8 py-7 text-white">
+              {/* dekorativa cirklar */}
+              <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10" />
+              <div className="absolute right-4 top-12 h-20 w-20 rounded-full bg-accent/20" />
+              <div className="relative flex items-center gap-4">
+                <div className="flex items-center justify-center h-12 w-12 rounded-2xl bg-white/15 backdrop-blur-sm shrink-0">
+                  <Send className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-display font-bold leading-tight">Skicka ett meddelande</h2>
+                  <p className="text-white/80 text-sm">Vi svarar så snart vi kan</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 md:p-8">
+              <SignupForm activity="Kontakt" messageRequired />
+            </div>
           </div>
         </div>
       </div>
